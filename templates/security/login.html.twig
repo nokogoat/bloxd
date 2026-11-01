@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - Bloxd{% endblock %}
+
+{% block body %}
+    <form method="post" class="card form-card">
+        <h1>Connexion</h1>
+
+        {% if error %}
+            <div class="flash flash-error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <label for="username">Email</label>
+        <input type="email" value="{{ last_username }}" name="_username" id="username" autocomplete="email" required autofocus>
+
+        <label for="password">Mot de passe</label>
+        <input type="password" name="_password" id="password" autocomplete="current-password" required>
+
+        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+        <button class="btn" type="submit">Se connecter</button>
+        <p class="muted">Pas de compte ? <a href="{{ path('app_register') }}">Inscription</a></p>
+    </form>
+{% endblock %}
