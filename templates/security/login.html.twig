@@ -3,26 +3,23 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
-    <div class="col-md-5">
-        <h1>Connexion</h1>
-        <form method="post">
+    <div class="colonne" style="margin: 48px auto 0">
+        <h1 class="serif" style="font-size: 32px">Connexion</h1>
+        <form method="post" class="panneau">
             {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                <div class="flash flash-error" style="margin-top:0">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
             {% endif %}
 
-            <div class="mb-3">
-                <label for="username" class="form-label">Email</label>
-                <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Mot de passe</label>
-                <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-            </div>
+            <label for="username">Email</label>
+            <input type="email" value="{{ last_username }}" name="_username" id="username" autocomplete="email" required autofocus>
+
+            <label for="password">Mot de passe</label>
+            <input type="password" name="_password" id="password" autocomplete="current-password" required>
 
             <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
             <button class="btn btn-primary" type="submit">Se connecter</button>
-            <a href="{{ path('app_register') }}" class="btn btn-link">Pas encore de compte ?</a>
+            <p class="meta" style="margin: 16px 0 0">Pas encore de compte ? <a href="{{ path('app_register') }}">Inscris-toi</a></p>
         </form>
     </div>
 {% endblock %}

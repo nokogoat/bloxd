@@ -3,46 +3,44 @@
 {% block title %}Jeux{% endblock %}
 
 {% block body %}
-    <h1>Jeux</h1>
-
-    <form method="get" class="row g-2 mb-3">
-        <div class="col-auto">
-            <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Titre ou studio">
+    <form method="get" class="filtres">
+        <div>
+            <label for="q">Titre ou studio</label>
+            <input type="search" id="q" name="q" value="{{ q }}">
         </div>
-        <div class="col-auto">
-            <select name="genre" class="form-select">
-                <option value="">Tous les genres</option>
+        <div>
+            <label for="genre">Genre</label>
+            <select id="genre" name="genre">
+                <option value="">Tous</option>
                 {% for genre in genres %}
                     <option value="{{ genre.id }}" {{ genreActif and genreActif.id == genre.id ? 'selected' }}>{{ genre.nom }}</option>
                 {% endfor %}
             </select>
         </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-secondary">Filtrer</button>
-            <a href="{{ path('app_jeu_index') }}" class="btn btn-link">Réinitialiser</a>
-        </div>
+        <button class="btn" type="submit">Filtrer</button>
+        {% if q or genreActif %}<a class="btn" href="{{ path('app_jeu_index') }}">Effacer</a>{% endif %}
     </form>
 
-    <p>Le jeu n'est pas dans la liste ? <a href="{{ path('app_jeu_roblox', {q: q}) }}">Cherche-le sur Roblox</a> pour l'ajouter.</p>
+    <div class="caps">
+        <span>{{ jeux|length }} jeu{{ jeux|length > 1 ? 'x' }}{% if genreActif %} · {{ genreActif.nom }}{% endif %}{% if q %} · « {{ q }} »{% endif %}</span>
+        <a href="{{ path('app_jeu_roblox', {q: q}) }}">Pas trouvé ? Chercher sur Roblox</a>
+    </div>
 
     {% if jeux is empty %}
-        <p>Aucun jeu trouvé.</p>
+        <p class="faible">Aucun jeu dans le catalogue ne correspond. <a href="{{ path('app_jeu_roblox', {q: q}) }}">Cherche-le sur Roblox</a> pour l'ajouter.</p>
     {% endif %}
 
-    <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+    <div class="affiches">
         {% for jeu in jeux %}
-            <div class="col">
-                <div class="card h-100">
-                    <a href="{{ path('app_jeu_show', {id: jeu.id}) }}">{% include '_jaquette.html.twig' with {jeu: jeu} %}</a>
-                    <div class="card-body">
-                        <h6 class="card-title mb-1"><a href="{{ path('app_jeu_show', {id: jeu.id}) }}">{{ jeu.titre }}</a></h6>
-                        <small class="text-muted">{{ jeu.genre.nom }} · {{ jeu.anneeSortie }}</small><br>
-                        {% if jeu.noteMoyenne %}
-                            {% include '_etoiles.html.twig' with {note: jeu.noteMoyenne|round} %} {{ jeu.noteMoyenne }}/5
-                        {% else %}
-                            <small class="text-muted">pas encore noté</small>
-                        {% endif %}
-                    </div>
+            <div>
+                {% include '_affiche.html.twig' with {jeu: jeu} %}
+                <div class="sous-affiche">
+                    <span class="titre">{{ jeu.titre }}</span>
+                    {% if jeu.noteMoyenne %}
+                        {% include '_etoiles.html.twig' with {note: jeu.noteMoyenne|round} %}
+                    {% else %}
+                        <span class="meta">pas noté</span>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}

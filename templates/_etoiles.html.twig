@@ -1,1 +1,1 @@
-<span class="etoiles" title="{{ note }}/5">{% for i in 1..5 %}{{ i <= note ? '★' : '☆' }}{% endfor %}</span>
+<span class="etoiles {{ taille|default('') }}" title="{{ note }}/5">{% for i in 1..5 %}{% if i <= note %}★{% else %}<span class="off">★</span>{% endif %}{% endfor %}</span>

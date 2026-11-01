@@ -1,5 +1,0 @@
-{% if jeu.vignetteUrl %}
-    <img src="{{ jeu.vignetteUrl }}" class="vignette card-img-top" alt="{{ jeu.titre }}">
-{% else %}
-    <div class="vignette-vide card-img-top" style="background: {{ jeu.couleur }}">{{ jeu.initiales }}</div>
-{% endif %}

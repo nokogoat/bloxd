@@ -1,15 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Jeu{% endblock %}
+{% block title %}Modifier{% endblock %}
 
 {% block body %}
-    <h1>Edit Jeu</h1>
-
-    <div class="col-md-6">
-        {{ include('admin/jeu/_form.html.twig', {'button_label': 'Update'}) }}
+    <div class="colonne" style="margin-top: 32px">
+        <div class="caps"><span>Modifier</span>{{ include('admin/jeu/_delete_form.html.twig') }}</div>
+        <div class="panneau">
+            {{ include('admin/jeu/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+        </div>
+        <p style="margin-top: 12px"><a href="{{ path('admin_jeu_index') }}">Retour à la liste</a></p>
     </div>
-
-    <a href="{{ path('admin_jeu_index') }}">back to list</a>
-
-    {{ include('admin/jeu/_delete_form.html.twig') }}
 {% endblock %}

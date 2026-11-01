@@ -3,33 +3,49 @@
 {% block title %}{{ profil.pseudo }}{% endblock %}
 
 {% block body %}
-    <h1>Avis de {{ profil.pseudo }}</h1>
-    <p class="text-muted">{{ profil.avis|length }} avis{% if moyenne %}, note moyenne {{ moyenne }}/5{% endif %}</p>
+    <header class="profil-tete">
+        {% include '_avatar.html.twig' with {user: profil, taille: 'grand'} %}
+        <h1>{{ profil.pseudo }}</h1>
+        <div class="profil-stats">
+            <div><strong>{{ profil.avis|length }}</strong><span>avis</span></div>
+            <div><strong>{{ moyenne ? moyenne|number_format(1, ',') : '–' }}</strong><span>note moyenne</span></div>
+            {% if genrePrefere %}<div><strong style="font-size: 18px; line-height: 39px">{{ genrePrefere }}</strong><span>genre préféré</span></div>{% endif %}
+        </div>
+    </header>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Jeu</th>
-                <th>Note</th>
-                <th>Commentaire</th>
-                <th>Date</th>
-                {% if app.user == profil %}<th></th>{% endif %}
-            </tr>
-        </thead>
-        <tbody>
+    <div class="caps"><span>Jeux notés</span></div>
+    {% if profil.avis is empty %}
+        <p class="faible">Aucun avis pour l'instant.</p>
+    {% else %}
+        <div class="affiches">
             {% for avis in profil.avis %}
-                <tr>
-                    <td>{% if avis.jeu.vignetteUrl %}<img src="{{ avis.jeu.vignetteUrl }}" class="mini-vignette" alt="">{% endif %}</td>
-                    <td><a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}">{{ avis.jeu.titre }}</a></td>
-                    <td>{% include '_etoiles.html.twig' with {note: avis.note} %}</td>
-                    <td>{{ avis.commentaire }}</td>
-                    <td>{{ avis.creeLe|date('d/m/Y') }}</td>
-                    {% if app.user == profil %}<td><a href="{{ path('app_avis_edit', {id: avis.id}) }}">modifier</a></td>{% endif %}
-                </tr>
-            {% else %}
-                <tr><td colspan="6">Aucun avis pour l'instant.</td></tr>
+                <div>
+                    {% include '_affiche.html.twig' with {jeu: avis.jeu} %}
+                    <div class="sous-affiche">
+                        {% include '_etoiles.html.twig' with {note: avis.note} %}
+                        <span class="meta">{{ avis.creeLe|date('d/m/Y') }}</span>
+                    </div>
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+
+        <div class="caps"><span>Ce qu'il en a dit</span></div>
+        <div class="avis-liste">
+            {% for avis in profil.avis|filter(a => a.commentaire) %}
+                <article class="avis avec-affiche">
+                    {% include '_avatar.html.twig' with {user: profil} %}
+                    <div>
+                        <div class="avis-tete">
+                            <a class="quoi" href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}">{{ avis.jeu.titre }}</a>
+                            {% include '_etoiles.html.twig' with {note: avis.note} %}
+                            <span class="meta">{{ avis.creeLe|date('d/m/Y') }}</span>
+                            {% if app.user == profil %}<a class="meta" href="{{ path('app_avis_edit', {id: avis.id}) }}">modifier</a>{% endif %}
+                        </div>
+                        <p class="avis-texte">{{ avis.commentaire }}</p>
+                    </div>
+                    {% include '_affiche.html.twig' with {jeu: avis.jeu} %}
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}

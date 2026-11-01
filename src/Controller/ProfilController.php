@@ -23,9 +23,18 @@ class ProfilController extends AbstractController
             $moyenne = round($total / $avis->count(), 1);
         }
 
+        // genre le plus noté par ce joueur
+        $parGenre = [];
+        foreach ($avis as $a) {
+            $nom = $a->getJeu()->getGenre()->getNom();
+            $parGenre[$nom] = ($parGenre[$nom] ?? 0) + 1;
+        }
+        arsort($parGenre);
+
         return $this->render('profil/show.html.twig', [
             'profil' => $user,
             'moyenne' => $moyenne,
+            'genrePrefere' => array_key_first($parGenre),
         ]);
     }
 }

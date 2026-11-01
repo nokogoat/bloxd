@@ -3,36 +3,29 @@
 {% block title %}Genres (admin){% endblock %}
 
 {% block body %}
-    <h1>Genres</h1>
+    <div class="admin-nav">
+        <a class="btn" href="{{ path('admin_index') }}">Tableau de bord</a>
+        <a class="btn btn-primary" href="{{ path('admin_genre_new') }}">Ajouter un genre</a>
+    </div>
+    <div class="caps"><span>{{ genres|length }} genres</span></div>
 
-    <table class="table table-striped table-hover">
+    <table>
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>Jeux</th>
-                <th>actions</th>
-            </tr>
+            <tr><th>Nom</th><th>Jeux</th><th></th></tr>
         </thead>
         <tbody>
         {% for genre in genres %}
             <tr>
-                <td>{{ genre.id }}</td>
-                <td>{{ genre.nom }}</td>
+                <td><a href="{{ path('app_jeu_index', {genre: genre.id}) }}">{{ genre.nom }}</a></td>
                 <td>{{ genre.jeux|length }}</td>
-                <td>
-                    <a href="{{ path('admin_genre_edit', {'id': genre.id}) }}">edit</a>
-                    {{ include('admin/genre/_delete_form.html.twig') }}
+                <td style="white-space: nowrap">
+                    <a href="{{ path('admin_genre_edit', {'id': genre.id}) }}">modifier</a>
+                    · {{ include('admin/genre/_delete_form.html.twig') }}
                 </td>
             </tr>
         {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
+            <tr><td colspan="3" class="faible">Aucun genre</td></tr>
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('admin_genre_new') }}" class="btn btn-primary">Create new</a>
-    <a href="{{ path('admin_index') }}" class="btn btn-link">Retour</a>
 {% endblock %}

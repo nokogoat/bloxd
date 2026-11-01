@@ -3,15 +3,15 @@
 {% block title %}Utilisateurs{% endblock %}
 
 {% block body %}
-    <h1>Utilisateurs</h1>
-    <p class="text-muted small">liste chargée depuis <code>{{ path('admin_api_users') }}</code>, le bouton fait un POST sur <code>/admin/api/utilisateurs/{id}/admin</code></p>
+    <div class="admin-nav">
+        <a class="btn" href="{{ path('admin_index') }}">Tableau de bord</a>
+    </div>
+    <div class="caps"><span>Utilisateurs</span><span class="faible"><code>{{ path('admin_api_users') }}</code> · rôle en POST sur /admin/api/utilisateurs/{id}/admin</span></div>
 
-    <table class="table table-striped" id="table-users">
+    <table id="table-users">
         <thead><tr><th>Pseudo</th><th>Email</th><th>Avis</th><th>Rôle</th><th></th></tr></thead>
-        <tbody><tr><td colspan="5">Chargement...</td></tr></tbody>
+        <tbody><tr><td colspan="5" class="faible">Chargement</td></tr></tbody>
     </table>
-
-    <a href="{{ path('admin_index') }}" class="btn btn-link">Retour</a>
 
     <script>
         const tbody = document.querySelector('#table-users tbody');
@@ -23,8 +23,8 @@
                         <td><a href="/profil/${u.pseudo}">${u.pseudo}</a></td>
                         <td>${u.email}</td>
                         <td>${u.nbAvis}</td>
-                        <td>${u.admin ? '<span class="badge text-bg-warning">admin</span>' : 'joueur'}</td>
-                        <td><button class="btn btn-sm btn-outline-secondary" data-id="${u.id}">${u.admin ? 'Retirer admin' : 'Rendre admin'}</button></td>
+                        <td>${u.admin ? '<span style="color: var(--orange)">admin</span>' : 'joueur'}</td>
+                        <td><button class="btn btn-petit" data-id="${u.id}">${u.admin ? 'Retirer admin' : 'Rendre admin'}</button></td>
                     </tr>`;
                 }
             });

@@ -13,10 +13,14 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(JeuRepository $jeuRepository, AvisRepository $avisRepository): Response
     {
+        $mieuxNotes = $jeuRepository->mieuxNotes(6);
+
         return $this->render('home/index.html.twig', [
-            'mieuxNotes' => $jeuRepository->mieuxNotes(6),
-            'derniersAvis' => $avisRepository->derniers(8),
+            'vedette' => $mieuxNotes[0]['jeu'] ?? null,
+            'mieuxNotes' => $mieuxNotes,
+            'derniersAvis' => $avisRepository->derniers(6),
             'nbJeux' => $jeuRepository->count([]),
+            'nbAvis' => $avisRepository->count([]),
         ]);
     }
 }

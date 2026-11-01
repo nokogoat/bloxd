@@ -3,55 +3,48 @@
 {% block title %}Admin{% endblock %}
 
 {% block body %}
-    <h1>Administration</h1>
-
-    <p>
-        <a href="{{ path('admin_jeu_index') }}" class="btn btn-outline-primary">Jeux</a>
-        <a href="{{ path('admin_genre_index') }}" class="btn btn-outline-primary">Genres</a>
-        <a href="{{ path('admin_user_index') }}" class="btn btn-outline-primary">Utilisateurs</a>
-    </p>
-
-    <div class="row g-3 mb-4">
-        <div class="col"><div class="card text-center"><div class="card-body"><h2>{{ nbUsers }}</h2>utilisateurs</div></div></div>
-        <div class="col"><div class="card text-center"><div class="card-body"><h2>{{ nbJeux }}</h2>jeux</div></div></div>
-        <div class="col"><div class="card text-center"><div class="card-body"><h2>{{ nbGenres }}</h2>genres</div></div></div>
-        <div class="col"><div class="card text-center"><div class="card-body"><h2>{{ nbAvis }}</h2>avis</div></div></div>
+    <div class="admin-nav">
+        <a class="btn" href="{{ path('admin_jeu_index') }}">Jeux</a>
+        <a class="btn" href="{{ path('admin_genre_index') }}">Genres</a>
+        <a class="btn" href="{{ path('admin_user_index') }}">Utilisateurs</a>
     </div>
 
-    <div class="row">
-        <div class="col-md-5">
-            <h4>Répartition des notes</h4>
-            <p class="text-muted small">chargé depuis <code>{{ path('admin_api_stats') }}</code></p>
-            <div id="repartition"></div>
+    <div class="compteurs gauche">
+        <div><strong>{{ nbUsers }}</strong><span>utilisateurs</span></div>
+        <div><strong>{{ nbJeux }}</strong><span>jeux</span></div>
+        <div><strong>{{ nbGenres }}</strong><span>genres</span></div>
+        <div><strong>{{ nbAvis }}</strong><span>avis</span></div>
+    </div>
+
+    <div class="deux-colonnes">
+        <div class="panneau">
+            <h3>Répartition des notes <span class="faible">· <code>{{ path('admin_api_stats') }}</code></span></h3>
+            <div class="repartition" id="repartition"></div>
         </div>
-        <div class="col-md-7">
-            <h4>Top 10 des jeux</h4>
-            <p class="text-muted small">chargé depuis <code>{{ path('admin_api_top_jeux') }}</code></p>
-            <table class="table table-sm" id="table-top">
+        <div class="panneau">
+            <h3>Top 10 <span class="faible">· <code>{{ path('admin_api_top_jeux') }}</code></span></h3>
+            <table id="table-top">
                 <thead><tr><th>Jeu</th><th>Genre</th><th>Moyenne</th><th>Avis</th></tr></thead>
-                <tbody><tr><td colspan="4">Chargement...</td></tr></tbody>
+                <tbody><tr><td colspan="4" class="faible">Chargement</td></tr></tbody>
             </table>
         </div>
     </div>
 
-    <h4>Derniers avis</h4>
-    <p class="text-muted small">chargés depuis <code>{{ path('admin_api_avis') }}</code>, suppression en DELETE sur <code>/admin/api/avis/{id}</code></p>
-    <table class="table table-striped table-sm" id="table-avis">
+    <div class="caps"><span>Derniers avis</span><span class="faible"><code>{{ path('admin_api_avis') }}</code> · suppression en DELETE</span></div>
+    <table id="table-avis">
         <thead><tr><th>Date</th><th>Jeu</th><th>Auteur</th><th>Note</th><th>Commentaire</th><th></th></tr></thead>
-        <tbody><tr><td colspan="6">Chargement...</td></tr></tbody>
+        <tbody><tr><td colspan="6" class="faible">Chargement</td></tr></tbody>
     </table>
 
     <script>
-        // répartition des notes : une barre par note
+        const etoiles = n => '<span class="etoiles">' + '★'.repeat(n) + '<span class="off">' + '★'.repeat(5 - n) + '</span></span>';
+
         fetch('{{ path('admin_api_stats') }}').then(r => r.json()).then(d => {
             const max = Math.max(1, ...Object.values(d.repartitionNotes));
             const div = document.getElementById('repartition');
             for (let note = 5; note >= 1; note--) {
                 const nb = d.repartitionNotes[note];
-                div.innerHTML += `<div class="d-flex align-items-center mb-1">
-                    <span class="etoiles" style="width:90px">${'★'.repeat(note)}</span>
-                    <div class="progress flex-grow-1" style="height:14px"><div class="progress-bar" style="width:${100 * nb / max}%"></div></div>
-                    <span class="ms-2" style="width:30px">${nb}</span></div>`;
+                div.innerHTML += `<div class="ligne">${etoiles(note)}<div class="barre"><div style="width:${100 * nb / max}%"></div></div><span class="nb">${nb}</span></div>`;
             }
         });
 
@@ -69,12 +62,12 @@
                 tbodyAvis.innerHTML = '';
                 for (const r of rows) {
                     tbodyAvis.innerHTML += `<tr>
-                        <td>${r.creeLe}</td>
+                        <td class="meta">${r.creeLe}</td>
                         <td><a href="/jeux/${r.jeuId}">${r.jeu}</a></td>
                         <td>${r.auteur}</td>
-                        <td class="etoiles">${'★'.repeat(r.note)}</td>
+                        <td>${etoiles(r.note)}</td>
                         <td>${r.commentaire ? r.commentaire.replace(/</g, '&lt;') : ''}</td>
-                        <td><button class="btn btn-sm btn-outline-danger" data-id="${r.id}">Supprimer</button></td>
+                        <td><button class="btn btn-petit btn-danger" data-id="${r.id}">Supprimer</button></td>
                     </tr>`;
                 }
             });

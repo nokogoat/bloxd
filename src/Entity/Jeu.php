@@ -275,6 +275,19 @@ class Jeu
         return round($total / $this->avis->count(), 1);
     }
 
+    /**
+     * @return array<int, int> note => nombre d'avis, pour l'histogramme
+     */
+    public function getRepartition(): array
+    {
+        $repartition = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+        foreach ($this->avis as $avis) {
+            $repartition[$avis->getNote()]++;
+        }
+
+        return $repartition;
+    }
+
     public function getInitiales(): string
     {
         $mots = preg_split('/\s+/', trim((string) $this->titre));
