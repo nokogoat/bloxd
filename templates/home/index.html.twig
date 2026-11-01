@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bloxd — note tes jeux Roblox{% endblock %}
+
+{% block body %}
+    <section class="hero">
+        <h1>Note les jeux Roblox auxquels tu as joué.</h1>
+        <p class="lead">Garde un journal de tes parties, mets des étoiles, dis ce que tu en penses. {{ nbJeux }} jeux au catalogue.</p>
+        {% if not app.user %}
+            <p><a class="btn" href="{{ path('app_register') }}">Créer un compte</a> <a class="btn btn-secondary" href="{{ path('app_jeu_index') }}">Parcourir les jeux</a></p>
+        {% else %}
+            <p><a class="btn" href="{{ path('app_jeu_index') }}">Trouver un jeu à noter</a></p>
+        {% endif %}
+    </section>
+
+    <section>
+        <h2 class="section-title">Les mieux notés</h2>
+        {% if mieuxNotes is empty %}
+            <p class="muted">Pas encore d'avis.</p>
+        {% else %}
+            <div class="grille-jaquettes">
+                {% for row in mieuxNotes %}
+                    <div class="carte-jeu">
+                        {% include '_jaquette.html.twig' with {jeu: row.jeu} %}
+                        <div class="carte-infos">
+                            <strong>{{ row.jeu.titre }}</strong>
+                            <span class="note-moy">{{ row.moyenne }} <span class="muted">({{ row.nb }})</span></span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    <section>
+        <h2 class="section-title">Derniers avis</h2>
+        <div class="liste-avis">
+            {% for avis in derniersAvis %}
+                <article class="avis">
+                    {% include '_jaquette.html.twig' with {jeu: avis.jeu, taille: 'mini'} %}
+                    <div>
+                        <div class="avis-head">
+                            <a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}"><strong>{{ avis.jeu.titre }}</strong></a>
+                            {% include '_etoiles.html.twig' with {note: avis.note} %}
+                        </div>
+                        <div class="muted">par <a href="{{ path('app_profil', {pseudo: avis.auteur.pseudo}) }}">{{ avis.auteur.pseudo }}</a> · {{ avis.creeLe|date('d/m/Y') }}</div>
+                        {% if avis.commentaire %}<p>{{ avis.commentaire }}</p>{% endif %}
+                    </div>
+                </article>
+            {% else %}
+                <p class="muted">Aucun avis pour le moment.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

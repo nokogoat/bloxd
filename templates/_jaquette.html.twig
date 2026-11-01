@@ -1,0 +1,5 @@
+{# jaquette générée en CSS à partir de la couleur du jeu #}
+<a class="jaquette {{ taille|default('') }}" href="{{ path('app_jeu_show', {id: jeu.id}) }}" style="--c: {{ jeu.couleur }}" title="{{ jeu.titre }}">
+    <span class="initiales">{{ jeu.initiales }}</span>
+    <span class="jaquette-titre">{{ jeu.titre }}</span>
+</a>

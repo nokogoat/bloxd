@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Jeux - Bloxd{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Jeux</h1>
+        <form method="get" class="inline-form">
+            <input type="search" name="q" value="{{ q }}" placeholder="Titre ou studio...">
+            <select name="genre">
+                <option value="">Tous les genres</option>
+                {% for genre in genres %}
+                    <option value="{{ genre.id }}" {{ genreActif and genreActif.id == genre.id ? 'selected' }}>{{ genre.nom }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn" type="submit">Filtrer</button>
+        </form>
+    </div>
+
+    {% if jeux is empty %}
+        <p class="muted">Aucun jeu ne correspond.</p>
+    {% else %}
+        <div class="grille-jaquettes">
+            {% for jeu in jeux %}
+                <div class="carte-jeu">
+                    {% include '_jaquette.html.twig' with {jeu: jeu} %}
+                    <div class="carte-infos">
+                        <strong>{{ jeu.titre }}</strong>
+                        <span class="muted">{{ jeu.genre.nom }} · {{ jeu.anneeSortie }}</span>
+                        {% if jeu.noteMoyenne %}
+                            <span class="note-moy">{{ jeu.noteMoyenne }} <span class="muted">({{ jeu.avis|length }})</span></span>
+                        {% else %}
+                            <span class="muted">pas encore noté</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

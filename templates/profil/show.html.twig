@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ profil.pseudo }} - Bloxd{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Journal de {{ profil.pseudo }}</h1>
+        <span class="muted">{{ profil.avis|length }} avis{% if moyenne %} · note moyenne {{ moyenne }}/5{% endif %}</span>
+    </div>
+
+    {% if profil.avis is empty %}
+        <p class="muted">Aucun avis pour l'instant.</p>
+    {% else %}
+        <div class="liste-avis">
+            {% for avis in profil.avis %}
+                <article class="avis">
+                    {% include '_jaquette.html.twig' with {jeu: avis.jeu, taille: 'mini'} %}
+                    <div>
+                        <div class="avis-head">
+                            <a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}"><strong>{{ avis.jeu.titre }}</strong></a>
+                            {% include '_etoiles.html.twig' with {note: avis.note} %}
+                            <span class="muted">{{ avis.creeLe|date('d/m/Y') }}</span>
+                        </div>
+                        {% if avis.commentaire %}<p>{{ avis.commentaire }}</p>{% endif %}
+                        {% if app.user == profil %}
+                            <a class="muted" href="{{ path('app_avis_edit', {id: avis.id}) }}">modifier</a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

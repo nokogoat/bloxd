@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon avis - Bloxd{% endblock %}
+
+{% block body %}
+    <div class="card form-card">
+        <h1>Modifier mon avis</h1>
+        <p class="muted">sur <a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}">{{ avis.jeu.titre }}</a></p>
+
+        {{ form_start(form) }}
+            {{ form_row(form.note) }}
+            {{ form_row(form.commentaire) }}
+            <button class="btn" type="submit">Enregistrer</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
