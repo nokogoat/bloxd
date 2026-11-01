@@ -31,7 +31,6 @@ class AdminController extends AbstractController
     #[Route('/utilisateurs', name: 'admin_user_index')]
     public function users(): Response
     {
-        // le tableau est rempli en JS depuis /admin/api/utilisateurs
         return $this->render('admin/user/index.html.twig');
     }
 }

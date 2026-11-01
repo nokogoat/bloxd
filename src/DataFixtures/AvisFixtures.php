@@ -21,11 +21,10 @@ class AvisFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        mt_srand(42); // mêmes avis à chaque chargement
+        mt_srand(42);
 
         foreach (UserFixtures::PSEUDOS as $pseudo) {
             $user = $this->getReference('user-'.$pseudo, User::class);
-            // chaque joueur note entre 6 et 12 jeux différents
             $indices = range(0, 21);
             shuffle($indices);
             foreach (array_slice($indices, 0, mt_rand(6, 12)) as $i) {

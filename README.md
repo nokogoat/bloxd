@@ -31,7 +31,7 @@ Les fixtures créent 9 genres, 22 jeux et une quarantaine d'avis.
 ## Ce qu'on peut faire
 
 - Sans compte : accueil (mieux notés, derniers avis), liste des jeux avec recherche et filtre par genre, fiche d'un jeu, journal d'un joueur.
-- Connecté : poster un avis (un seul par jeu), le modifier, le supprimer.
+- Connecté : poster un avis (un seul par jeu), le modifier, le supprimer. Chercher un jeu sur Roblox et l'ajouter au catalogue en un clic (le genre est déduit de celui de Roblox).
 - Admin (`/admin`) : CRUD des jeux et des genres, import d'un jeu depuis son URL Roblox, tableau de bord avec des routes JSON :
   - `POST /admin/api/jeux/sync` et `POST /admin/api/jeux/{id}/sync` pour rafraîchir icônes, joueurs en ligne et visites
   - `GET /admin/api/stats` compteurs et répartition des notes

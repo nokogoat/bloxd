@@ -33,7 +33,6 @@ class Jeu
     #[Assert\Range(min: 2006, max: 2030)]
     private ?int $anneeSortie = null;
 
-    // couleur de la "jaquette" générée en CSS, ex : #e2231a
     #[ORM\Column(length: 7)]
     #[Assert\CssColor(formats: Assert\CssColor::HEX_LONG)]
     private string $couleur = '#e2231a';
@@ -42,11 +41,10 @@ class Jeu
     #[ORM\JoinColumn(nullable: false)]
     private ?Genre $genre = null;
 
-    // identifiant du jeu sur Roblox (le nombre dans l'URL roblox.com/games/XXXX), facultatif
+    // id dans l'url roblox.com/games/XXXX
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
     private ?int $placeId = null;
 
-    // identifiant "universe" utilisé par l'API Roblox, retrouvé à partir du placeId
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
     private ?int $universeId = null;
 
@@ -260,9 +258,6 @@ class Jeu
         return round($total / $this->avis->count(), 1);
     }
 
-    /**
-     * Initiales affichées sur la jaquette.
-     */
     public function getInitiales(): string
     {
         $mots = preg_split('/\s+/', trim((string) $this->titre));

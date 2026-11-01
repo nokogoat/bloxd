@@ -23,7 +23,7 @@ class AvisController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-            $this->addFlash('success', 'Avis modifié.');
+            $this->addFlash('success', 'Avis modifié');
 
             return $this->redirectToRoute('app_jeu_show', ['id' => $avis->getJeu()->getId()]);
         }
@@ -42,7 +42,7 @@ class AvisController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$avis->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($avis);
             $entityManager->flush();
-            $this->addFlash('success', 'Avis supprimé.');
+            $this->addFlash('success', 'Avis supprimé');
         }
 
         return $this->redirectToRoute('app_jeu_show', ['id' => $avis->getJeu()->getId()]);

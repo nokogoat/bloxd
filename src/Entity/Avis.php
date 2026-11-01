@@ -24,7 +24,6 @@ class Avis
     #[ORM\JoinColumn(nullable: false)]
     private ?Jeu $jeu = null;
 
-    // note de 1 à 5 étoiles
     #[ORM\Column(type: Types::SMALLINT)]
     #[Assert\NotNull]
     #[Assert\Range(min: 1, max: 5)]

@@ -9,7 +9,7 @@
     </div>
 
     {% if profil.avis is empty %}
-        <p class="muted">Aucun avis pour l'instant.</p>
+        <p class="muted">Aucun avis pour l'instant</p>
     {% else %}
         <div class="liste-avis">
             {% for avis in profil.avis %}
@@ -19,7 +19,7 @@
                         <div class="avis-head">
                             <a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}"><strong>{{ avis.jeu.titre }}</strong></a>
                             {% include '_etoiles.html.twig' with {note: avis.note} %}
-                            <span class="muted">{{ avis.creeLe|date('d/m/Y') }}</span>
+                            <span class="date muted">{{ avis.creeLe|date('d/m/Y') }}</span>
                         </div>
                         {% if avis.commentaire %}<p>{{ avis.commentaire }}</p>{% endif %}
                         {% if app.user == profil %}

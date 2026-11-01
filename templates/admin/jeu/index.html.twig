@@ -26,7 +26,7 @@
                 <tr data-id="{{ jeu.id }}">
                     <td>{% include '_jaquette.html.twig' with {jeu: jeu, taille: 'mini'} %}</td>
                     <td>{{ jeu.titre }}</td><td>{{ jeu.studio }}</td><td>{{ jeu.genre.nom }}</td><td>{{ jeu.anneeSortie }}</td><td>{{ jeu.avis|length }}</td>
-                    <td class="en-ligne">{{ jeu.joueursEnLigne is not null ? jeu.joueursEnLigne|number_format(0, ',', ' ') : '—' }}</td>
+                    <td class="en-ligne">{{ jeu.joueursEnLigne is not null ? jeu.joueursEnLigne|number_format(0, ',', ' ') : '-' }}</td>
                     <td class="actions">
                         {% if jeu.placeId %}<button class="btn-link" data-sync="{{ jeu.id }}">sync</button>{% endif %}
                         <a href="{{ path('admin_jeu_edit', {'id': jeu.id}) }}">modifier</a>
@@ -43,9 +43,8 @@
     </section>
 
     <script>
-        // synchronisation d'un seul jeu : POST /admin/api/jeux/{id}/sync, puis mise à jour de la ligne
         document.querySelectorAll('button[data-sync]').forEach(btn => btn.addEventListener('click', async () => {
-            btn.textContent = '...';
+            btn.textContent = 'en cours';
             const r = await fetch(`/admin/api/jeux/${btn.dataset.sync}/sync`, { method: 'POST' });
             const d = await r.json();
             if (!r.ok) { alert(d.error); btn.textContent = 'sync'; return; }
@@ -55,10 +54,9 @@
             btn.textContent = 'sync';
         }));
 
-        // tout synchroniser : POST /admin/api/jeux/sync puis rechargement
         document.getElementById('btn-sync-tous').addEventListener('click', async (e) => {
             e.target.disabled = true;
-            e.target.textContent = 'Synchronisation...';
+            e.target.textContent = 'Synchronisation en cours';
             const r = await fetch('{{ path('admin_api_jeux_sync') }}', { method: 'POST' });
             const d = await r.json();
             alert(`${d.misAJour} jeu(x) mis à jour sur ${d.total}.`);

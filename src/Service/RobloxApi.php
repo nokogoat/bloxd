@@ -6,22 +6,13 @@ use App\Entity\Jeu;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * Appels aux API web publiques de Roblox (pas de clé nécessaire).
- *
- * - apis.roblox.com/universes/v1/places/{placeId}/universe : placeId -> universeId
- * - games.roblox.com/v1/games?universeIds=...              : infos (nom, créateur, joueurs, visites...)
- * - thumbnails.roblox.com/v1/games/icons?universeIds=...    : icône du jeu
- */
+// API web de Roblox, celles que le site roblox.com utilise lui-même. Pas de clé.
 class RobloxApi
 {
     public function __construct(private HttpClientInterface $client)
     {
     }
 
-    /**
-     * Accepte une URL roblox.com/games/123456/Nom ou directement un nombre.
-     */
     public function extrairePlaceId(string $saisie): ?int
     {
         $saisie = trim($saisie);
@@ -104,18 +95,59 @@ class RobloxApi
     }
 
     /**
-     * Remplit un nouveau Jeu à partir d'un placeId (titre, studio, description, année).
-     * Retourne false si Roblox ne connaît pas ce jeu.
+     * @return array<int, array{universeId: int, placeId: int, nom: string, joueurs: int, votes: int, icone: ?string}>
      */
-    public function importer(Jeu $jeu, int $placeId): bool
+    public function rechercher(string $q, int $limite = 12): array
+    {
+        try {
+            $data = $this->client->request('GET', 'https://apis.roblox.com/search-api/omni-search', [
+                'query' => ['searchQuery' => $q, 'sessionId' => bin2hex(random_bytes(8)), 'pageType' => 'all'],
+            ])->toArray();
+        } catch (ExceptionInterface) {
+            return [];
+        }
+
+        $resultats = [];
+        foreach ($data['searchResults'] ?? [] as $groupe) {
+            foreach ($groupe['contents'] ?? [] as $c) {
+                if (($c['contentType'] ?? '') !== 'Game' || empty($c['rootPlaceId'])) {
+                    continue;
+                }
+                $resultats[(int) $c['universeId']] = [
+                    'universeId' => (int) $c['universeId'],
+                    'placeId' => (int) $c['rootPlaceId'],
+                    'nom' => $this->nettoyerTitre($c['name'] ?? ''),
+                    'joueurs' => (int) ($c['playerCount'] ?? 0),
+                    'votes' => (int) ($c['totalUpVotes'] ?? 0),
+                    'icone' => null,
+                ];
+                if (count($resultats) >= $limite) {
+                    break 2;
+                }
+            }
+        }
+
+        foreach ($this->icones(array_keys($resultats)) as $universeId => $url) {
+            $resultats[$universeId]['icone'] = $url;
+        }
+
+        return array_values($resultats);
+    }
+
+    /**
+     * Remplit le jeu depuis Roblox. Renvoie les infos brutes de l'API, ou null si le jeu n'existe pas.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function importer(Jeu $jeu, int $placeId): ?array
     {
         $universeId = $this->universeId($placeId);
         if ($universeId === null) {
-            return false;
+            return null;
         }
         $infos = $this->infos([$universeId])[$universeId] ?? null;
         if ($infos === null) {
-            return false;
+            return null;
         }
 
         $jeu->setPlaceId($placeId)
@@ -127,15 +159,30 @@ class RobloxApi
 
         $this->appliquerStats($jeu, $infos, $this->icones([$universeId])[$universeId] ?? null);
 
-        return true;
+        return $infos;
+    }
+
+    public function genreFrancais(?string $genreRoblox): string
+    {
+        return match ($genreRoblox) {
+            'Roleplay & Avatar Sim', 'Social' => 'Roleplay',
+            'Simulation' => 'Simulateur',
+            'Horror' => 'Horreur',
+            'Action', 'Shooter' => 'Combat',
+            'Obby & Platformer' => 'Obby',
+            'Survival' => 'Survie',
+            'Adventure', 'RPG' => 'Aventure',
+            'Party & Casual', 'Puzzle' => 'Mini-jeux',
+            'Strategy', 'Shopping' => 'Tycoon',
+            null, '' => 'Autre',
+            default => $genreRoblox,
+        };
     }
 
     /**
-     * Met à jour icône, joueurs en ligne et visites de plusieurs jeux en 2 appels (par lots de 50).
-     * Ne touche pas au titre ni à la description, qui sont gérés à la main.
+     * Met à jour icône, joueurs en ligne et visites. Ne touche pas au titre ni à la description.
      *
      * @param Jeu[] $jeux
-     * @return int nombre de jeux mis à jour
      */
     public function synchroniser(array $jeux): int
     {
@@ -180,10 +227,8 @@ class RobloxApi
         }
     }
 
-    /**
-     * Les titres Roblox sont pleins de "[🎃 UPDATE]" et d'émojis promotionnels, on les enlève.
-     */
-    private function nettoyerTitre(string $titre): string
+    // enlève les [UPDATE] et les émojis des titres Roblox
+    public function nettoyerTitre(string $titre): string
     {
         $titre = preg_replace('/\[[^\]]*\]/u', '', $titre);
         $titre = preg_replace('/[^\p{L}\p{N}\s\'!?:.\-&]/u', '', $titre);

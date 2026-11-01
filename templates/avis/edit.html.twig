@@ -8,7 +8,17 @@
         <p class="muted">sur <a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}">{{ avis.jeu.titre }}</a></p>
 
         {{ form_start(form) }}
-            {{ form_row(form.note) }}
+            {{ form_label(form.note) }}
+            {{ form_errors(form.note) }}
+            <div class="choix-notes">
+                {% for choix in form.note %}
+                    <label class="choix-note" for="{{ choix.vars.id }}">
+                        {{ form_widget(choix) }}
+                        {% include '_etoiles.html.twig' with {note: choix.vars.value} %}
+                        <span>{{ choix.vars.label }}</span>
+                    </label>
+                {% endfor %}
+            </div>
             {{ form_row(form.commentaire) }}
             <button class="btn" type="submit">Enregistrer</button>
         {{ form_end(form) }}

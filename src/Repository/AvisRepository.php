@@ -31,9 +31,7 @@ class AvisRepository extends ServiceEntityRepository
     }
 
     /**
-     * Répartition des notes (1 à 5) pour la page admin.
-     *
-     * @return array<int, int> note => nombre
+     * @return array<int, int> note => nombre d'avis
      */
     public function repartitionNotes(): array
     {

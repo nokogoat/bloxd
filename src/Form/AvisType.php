@@ -17,18 +17,18 @@ class AvisType extends AbstractType
             ->add('note', ChoiceType::class, [
                 'label' => 'Note',
                 'choices' => [
-                    '★★★★★ Incroyable' => 5,
-                    '★★★★ Très bien' => 4,
-                    '★★★ Correct' => 3,
-                    '★★ Bof' => 2,
-                    '★ Nul' => 1,
+                    'Incroyable' => 5,
+                    'Très bien' => 4,
+                    'Correct' => 3,
+                    'Bof' => 2,
+                    'Nul' => 1,
                 ],
                 'expanded' => true,
             ])
             ->add('commentaire', TextareaType::class, [
                 'label' => 'Ton avis (facultatif)',
                 'required' => false,
-                'attr' => ['rows' => 4, 'placeholder' => 'Qu\'est-ce que tu en as pensé ?'],
+                'attr' => ['rows' => 4],
             ])
         ;
     }

@@ -64,7 +64,7 @@ final class GenreController extends AbstractController
     public function delete(Request $request, Genre $genre, EntityManagerInterface $entityManager): Response
     {
         if (!$genre->getJeux()->isEmpty()) {
-            $this->addFlash('error', 'Impossible de supprimer un genre qui a encore des jeux.');
+            $this->addFlash('error', 'Impossible de supprimer un genre qui a encore des jeux');
 
             return $this->redirectToRoute('admin_genre_index', [], Response::HTTP_SEE_OTHER);
         }

@@ -15,9 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * Routes JSON appelées en fetch() depuis les pages admin.
- */
 #[Route('/admin/api')]
 class ApiController extends AbstractController
 {

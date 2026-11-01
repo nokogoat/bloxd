@@ -12,7 +12,7 @@
         <p class="muted">Tableau rempli depuis <code>{{ path('admin_api_users') }}</code>. Le bouton appelle <code>POST /admin/api/utilisateurs/{id}/admin</code> pour donner ou retirer le rôle admin.</p>
         <table id="table-users">
             <thead><tr><th>Pseudo</th><th>Email</th><th>Avis</th><th>Rôle</th><th></th></tr></thead>
-            <tbody><tr><td colspan="5" class="muted">Chargement...</td></tr></tbody>
+            <tbody><tr><td colspan="5" class="muted">Chargement</td></tr></tbody>
         </table>
     </section>
 
@@ -27,7 +27,7 @@
                         <td><a href="/profil/${u.pseudo}">${u.pseudo}</a></td>
                         <td>${u.email}</td>
                         <td>${u.nbAvis}</td>
-                        <td>${u.admin ? '<span class="tag">admin</span>' : 'joueur'}</td>
+                        <td>${u.admin ? '<span class="tag">admin</span>' : '<span class="muted">joueur</span>'}</td>
                         <td><button class="btn btn-small btn-secondary" data-id="${u.id}">${u.admin ? 'Retirer admin' : 'Rendre admin'}</button></td>
                     </tr>`);
             }

@@ -6,7 +6,7 @@
     <div class="page-head">
         <h1>Jeux</h1>
         <form method="get" class="inline-form">
-            <input type="search" name="q" value="{{ q }}" placeholder="Titre ou studio...">
+            <input type="search" name="q" value="{{ q }}" placeholder="Titre ou studio">
             <select name="genre">
                 <option value="">Tous les genres</option>
                 {% for genre in genres %}
@@ -17,8 +17,11 @@
         </form>
     </div>
 
+    <p class="muted">Le jeu que tu cherches n'est pas là ?
+        <a href="{{ path('app_jeu_roblox', {q: q}) }}">Cherche-le sur Roblox</a> et ajoute-le au catalogue.</p>
+
     {% if jeux is empty %}
-        <p class="muted">Aucun jeu ne correspond.</p>
+        <p class="muted">Aucun jeu ne correspond dans le catalogue</p>
     {% else %}
         <div class="grille-jaquettes">
             {% for jeu in jeux %}
@@ -28,9 +31,9 @@
                         <strong>{{ jeu.titre }}</strong>
                         <span class="muted">{{ jeu.genre.nom }} · {{ jeu.anneeSortie }}</span>
                         {% if jeu.noteMoyenne %}
-                            <span class="note-moy">{{ jeu.noteMoyenne }} <span class="muted">({{ jeu.avis|length }})</span></span>
+                            <span class="note-moy">{% include '_etoiles.html.twig' with {note: jeu.noteMoyenne|round} %} <b>{{ jeu.noteMoyenne|number_format(1, ',') }}</b> <span class="muted">{{ jeu.avis|length }} avis</span></span>
                         {% else %}
-                            <span class="muted">pas encore noté</span>
+                            <span class="muted">Pas encore noté</span>
                         {% endif %}
                     </div>
                 </div>

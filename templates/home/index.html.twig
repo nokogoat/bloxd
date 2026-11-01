@@ -1,55 +1,77 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Bloxd — note tes jeux Roblox{% endblock %}
+{% block title %}Bloxd, tes jeux Roblox notés sur 5{% endblock %}
 
 {% block body %}
     <section class="hero">
-        <h1>Note les jeux Roblox auxquels tu as joué.</h1>
-        <p class="lead">Garde un journal de tes parties, mets des étoiles, dis ce que tu en penses. {{ nbJeux }} jeux au catalogue.</p>
-        {% if not app.user %}
-            <p><a class="btn" href="{{ path('app_register') }}">Créer un compte</a> <a class="btn btn-secondary" href="{{ path('app_jeu_index') }}">Parcourir les jeux</a></p>
-        {% else %}
-            <p><a class="btn" href="{{ path('app_jeu_index') }}">Trouver un jeu à noter</a></p>
-        {% endif %}
-    </section>
-
-    <section>
-        <h2 class="section-title">Les mieux notés</h2>
-        {% if mieuxNotes is empty %}
-            <p class="muted">Pas encore d'avis.</p>
-        {% else %}
-            <div class="grille-jaquettes">
-                {% for row in mieuxNotes %}
-                    <div class="carte-jeu">
-                        {% include '_jaquette.html.twig' with {jeu: row.jeu} %}
-                        <div class="carte-infos">
-                            <strong>{{ row.jeu.titre }}</strong>
-                            <span class="note-moy">{{ row.moyenne }} <span class="muted">({{ row.nb }})</span></span>
-                        </div>
+        <div>
+            <h1>Tes jeux Roblox, notés sur 5</h1>
+            <p class="lead">Un journal des jeux auxquels tu as joué, une note en briques et l'avis des autres joueurs. {{ nbJeux }} jeux au catalogue, et le reste de Roblox à un clic.</p>
+            <div class="actions">
+                {% if not app.user %}
+                    <a class="btn" href="{{ path('app_register') }}">Créer un compte</a>
+                    <a class="btn btn-secondary" href="{{ path('app_jeu_index') }}">Parcourir les jeux</a>
+                {% else %}
+                    <a class="btn" href="{{ path('app_jeu_index') }}">Trouver un jeu à noter</a>
+                    <a class="btn btn-secondary" href="{{ path('app_profil', {pseudo: app.user.pseudo}) }}">Mon journal</a>
+                {% endif %}
+            </div>
+        </div>
+        {% if mieuxNotes is not empty %}
+            {% set v = mieuxNotes|first %}
+            <div class="vedette">
+                {% include '_jaquette.html.twig' with {jeu: v.jeu} %}
+                <div>
+                    <div class="vedette-label">Le mieux noté en ce moment</div>
+                    <h2><a href="{{ path('app_jeu_show', {id: v.jeu.id}) }}">{{ v.jeu.titre }}</a></h2>
+                    <div class="muted">{{ v.jeu.studio }} · {{ v.jeu.genre.nom }} · {{ v.jeu.anneeSortie }}</div>
+                    <div class="moyenne">
+                        <strong>{{ v.moyenne|number_format(1, ',') }}</strong>
+                        {% include '_etoiles.html.twig' with {note: v.moyenne|round, taille: 'grandes'} %}
+                        <span class="muted">{{ v.nb }} avis</span>
                     </div>
-                {% endfor %}
+                    {% for avis in v.jeu.avis|filter(a => a.commentaire)|slice(0, 1) %}
+                        <blockquote>« {{ avis.commentaire }} » <span class="muted">{{ avis.auteur.pseudo }}</span></blockquote>
+                    {% endfor %}
+                </div>
             </div>
         {% endif %}
     </section>
 
-    <section>
-        <h2 class="section-title">Derniers avis</h2>
-        <div class="liste-avis">
-            {% for avis in derniersAvis %}
-                <article class="avis">
-                    {% include '_jaquette.html.twig' with {jeu: avis.jeu, taille: 'mini'} %}
-                    <div>
-                        <div class="avis-head">
-                            <a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}"><strong>{{ avis.jeu.titre }}</strong></a>
-                            {% include '_etoiles.html.twig' with {note: avis.note} %}
-                        </div>
-                        <div class="muted">par <a href="{{ path('app_profil', {pseudo: avis.auteur.pseudo}) }}">{{ avis.auteur.pseudo }}</a> · {{ avis.creeLe|date('d/m/Y') }}</div>
-                        {% if avis.commentaire %}<p>{{ avis.commentaire }}</p>{% endif %}
+    <h2 class="section-title">Les mieux notés</h2>
+    {% if mieuxNotes is empty %}
+        <p class="muted">Pas encore d'avis</p>
+    {% else %}
+        <div class="grille-jaquettes">
+            {% for row in mieuxNotes %}
+                <div class="carte-jeu">
+                    {% include '_jaquette.html.twig' with {jeu: row.jeu} %}
+                    <div class="carte-infos">
+                        <strong>{{ row.jeu.titre }}</strong>
+                        <span class="note-moy">{% include '_etoiles.html.twig' with {note: row.moyenne|round} %} <b>{{ row.moyenne|number_format(1, ',') }}</b> <span class="muted">{{ row.nb }} avis</span></span>
                     </div>
-                </article>
-            {% else %}
-                <p class="muted">Aucun avis pour le moment.</p>
+                </div>
             {% endfor %}
         </div>
-    </section>
+    {% endif %}
+
+    <h2 class="section-title">Derniers avis</h2>
+    <div class="liste-avis">
+        {% for avis in derniersAvis %}
+            <article class="avis">
+                {% include '_jaquette.html.twig' with {jeu: avis.jeu, taille: 'mini'} %}
+                <div>
+                    <div class="avis-head">
+                        <a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}"><strong>{{ avis.jeu.titre }}</strong></a>
+                        {% include '_etoiles.html.twig' with {note: avis.note} %}
+                        <span class="muted">par <a href="{{ path('app_profil', {pseudo: avis.auteur.pseudo}) }}">{{ avis.auteur.pseudo }}</a></span>
+                        <span class="date">{{ avis.creeLe|date('d/m/Y') }}</span>
+                    </div>
+                    {% if avis.commentaire %}<p>{{ avis.commentaire }}</p>{% endif %}
+                </div>
+            </article>
+        {% else %}
+            <p class="muted">Aucun avis pour le moment</p>
+        {% endfor %}
+    </div>
 {% endblock %}

@@ -31,7 +31,7 @@
             <p class="muted">Chargé depuis <code>{{ path('admin_api_top_jeux') }}</code></p>
             <table id="table-top">
                 <thead><tr><th>Jeu</th><th>Genre</th><th>Moyenne</th><th>Avis</th></tr></thead>
-                <tbody><tr><td colspan="4" class="muted">Chargement...</td></tr></tbody>
+                <tbody><tr><td colspan="4" class="muted">Chargement</td></tr></tbody>
             </table>
         </section>
     </div>
@@ -41,7 +41,7 @@
         <p class="muted">Chargés depuis <code>{{ path('admin_api_avis') }}</code>, suppression en <code>DELETE /admin/api/avis/{id}</code></p>
         <table id="table-avis">
             <thead><tr><th>Date</th><th>Jeu</th><th>Auteur</th><th>Note</th><th>Commentaire</th><th></th></tr></thead>
-            <tbody><tr><td colspan="6" class="muted">Chargement...</td></tr></tbody>
+            <tbody><tr><td colspan="6" class="muted">Chargement</td></tr></tbody>
         </table>
     </section>
 
@@ -51,14 +51,15 @@
             const div = document.getElementById('repartition');
             for (let note = 5; note >= 1; note--) {
                 const nb = d.repartitionNotes[note];
+                const briques = Array.from({length: 5}, (_, i) => `<i class="${i < note ? 'plein' : ''}"></i>`).join('');
                 div.insertAdjacentHTML('beforeend',
-                    `<div class="barre-ligne"><span>${'★'.repeat(note)}</span><div class="barre"><div style="width:${100 * nb / max}%"></div></div><span>${nb}</span></div>`);
+                    `<div class="barre-ligne ${nb === max ? 'max' : ''}"><span class="briques">${briques}</span><div class="barre"><div style="width:${100 * nb / max}%"></div></div><span class="nb">${nb}</span></div>`);
             }
         });
 
         fetch('{{ path('admin_api_top_jeux') }}').then(r => r.json()).then(rows => {
             const tbody = document.querySelector('#table-top tbody');
-            tbody.innerHTML = rows.length ? '' : '<tr><td colspan="4" class="muted">Aucun avis.</td></tr>';
+            tbody.innerHTML = rows.length ? '' : '<tr><td colspan="4" class="muted">Aucun avis</td></tr>';
             for (const r of rows) {
                 tbody.insertAdjacentHTML('beforeend', `<tr><td><a href="/jeux/${r.id}">${r.titre}</a></td><td>${r.genre}</td><td>${r.moyenne}</td><td>${r.nbAvis}</td></tr>`);
             }
@@ -67,15 +68,15 @@
         const tbodyAvis = document.querySelector('#table-avis tbody');
         async function chargerAvis() {
             const rows = await (await fetch('{{ path('admin_api_avis') }}')).json();
-            tbodyAvis.innerHTML = rows.length ? '' : '<tr><td colspan="6" class="muted">Aucun avis.</td></tr>';
+            tbodyAvis.innerHTML = rows.length ? '' : '<tr><td colspan="6" class="muted">Aucun avis</td></tr>';
             for (const r of rows) {
                 tbodyAvis.insertAdjacentHTML('beforeend', `
                     <tr>
                         <td>${r.creeLe}</td>
                         <td><a href="/jeux/${r.jeuId}">${r.jeu}</a></td>
                         <td>${r.auteur}</td>
-                        <td>${'★'.repeat(r.note)}</td>
-                        <td>${r.commentaire ? r.commentaire.replace(/</g, '&lt;') : '<span class="muted">—</span>'}</td>
+                        <td><span class="briques">${Array.from({length: 5}, (_, i) => `<i class="${i < r.note ? 'plein' : ''}"></i>`).join('')}</span></td>
+                        <td>${r.commentaire ? r.commentaire.replace(/</g, '&lt;') : '<span class="muted">-</span>'}</td>
                         <td><button class="btn btn-small btn-danger" data-id="${r.id}">Supprimer</button></td>
                     </tr>`);
             }

@@ -56,17 +56,17 @@ final class JeuController extends AbstractController
             $genre = $genreRepository->find($request->getPayload()->getInt('genre'));
 
             if ($placeId === null || $genre === null) {
-                $this->addFlash('error', 'Il faut une URL Roblox valide et un genre.');
+                $this->addFlash('error', 'Il faut une URL Roblox valide et un genre');
             } else {
                 $jeu = new Jeu();
                 $jeu->setGenre($genre)->setCouleur(sprintf('#%06x', mt_rand(0x202020, 0xd0d0d0)));
 
-                if (!$robloxApi->importer($jeu, $placeId)) {
-                    $this->addFlash('error', 'Roblox ne connaît pas ce jeu (ou l\'API ne répond pas).');
+                if ($robloxApi->importer($jeu, $placeId) === null) {
+                    $this->addFlash('error', 'Roblox ne connaît pas ce jeu, ou l\'API ne répond pas');
                 } else {
                     $entityManager->persist($jeu);
                     $entityManager->flush();
-                    $this->addFlash('success', 'Jeu importé depuis Roblox, vérifie le titre et la description.');
+                    $this->addFlash('success', 'Jeu importé depuis Roblox, vérifie le titre et la description');
 
                     return $this->redirectToRoute('admin_jeu_edit', ['id' => $jeu->getId()], Response::HTTP_SEE_OTHER);
                 }

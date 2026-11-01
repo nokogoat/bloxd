@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Avis;
+use App\Entity\Genre;
 use App\Entity\Jeu;
 use App\Form\AvisType;
 use App\Repository\GenreRepository;
 use App\Repository\JeuRepository;
+use App\Service\RobloxApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,13 +32,71 @@ class JeuController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_jeu_show', methods: ['GET', 'POST'])]
+    #[Route('/roblox', name: 'app_jeu_roblox', methods: ['GET'])]
+    public function roblox(Request $request, RobloxApi $robloxApi, JeuRepository $jeuRepository): Response
+    {
+        $q = trim((string) $request->query->get('q'));
+        $resultats = $q !== '' ? $robloxApi->rechercher($q) : [];
+
+        $dejaLa = [];
+        if ($resultats !== []) {
+            foreach ($jeuRepository->findBy(['placeId' => array_column($resultats, 'placeId')]) as $jeu) {
+                $dejaLa[$jeu->getPlaceId()] = $jeu;
+            }
+        }
+
+        return $this->render('jeu/roblox.html.twig', [
+            'q' => $q,
+            'resultats' => $resultats,
+            'dejaLa' => $dejaLa,
+        ]);
+    }
+
+    #[Route('/roblox/ajouter', name: 'app_jeu_roblox_ajouter', methods: ['POST'])]
+    public function robloxAjouter(Request $request, RobloxApi $robloxApi, JeuRepository $jeuRepository, GenreRepository $genreRepository, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        if (!$this->isCsrfTokenValid('ajouter-roblox', $request->getPayload()->getString('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $placeId = $request->getPayload()->getInt('placeId');
+        $existant = $jeuRepository->findOneBy(['placeId' => $placeId]);
+        if ($existant !== null) {
+            return $this->redirectToRoute('app_jeu_show', ['id' => $existant->getId()]);
+        }
+
+        $jeu = new Jeu();
+        $jeu->setCouleur(sprintf('#%06x', mt_rand(0x202020, 0xd0d0d0)));
+        $infos = $robloxApi->importer($jeu, $placeId);
+        if ($infos === null) {
+            $this->addFlash('error', 'Impossible de récupérer ce jeu sur Roblox');
+
+            return $this->redirectToRoute('app_jeu_roblox', ['q' => $request->getPayload()->getString('q')]);
+        }
+
+        $nomGenre = $robloxApi->genreFrancais($infos['genre_l1'] ?? null);
+        $genre = $genreRepository->findOneBy(['nom' => $nomGenre]);
+        if ($genre === null) {
+            $genre = (new Genre())->setNom($nomGenre);
+            $entityManager->persist($genre);
+        }
+        $jeu->setGenre($genre);
+
+        $entityManager->persist($jeu);
+        $entityManager->flush();
+        $this->addFlash('success', $jeu->getTitre().' est dans le catalogue, à toi de le noter');
+
+        return $this->redirectToRoute('app_jeu_show', ['id' => $jeu->getId()]);
+    }
+
+    #[Route('/{id}', name: 'app_jeu_show', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function show(Jeu $jeu, Request $request, EntityManagerInterface $entityManager): Response
     {
         $monAvis = $this->getUser() ? $jeu->getAvisDe($this->getUser()) : null;
         $form = null;
 
-        // formulaire d'avis seulement si connecté et pas encore d'avis sur ce jeu
         if ($this->getUser() && $monAvis === null) {
             $avis = new Avis();
             $avis->setJeu($jeu)->setAuteur($this->getUser());
@@ -46,7 +106,7 @@ class JeuController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $entityManager->persist($avis);
                 $entityManager->flush();
-                $this->addFlash('success', 'Avis publié !');
+                $this->addFlash('success', 'Ton avis est publié');
 
                 return $this->redirectToRoute('app_jeu_show', ['id' => $jeu->getId()]);
             }

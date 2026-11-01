@@ -18,8 +18,6 @@ class JeuRepository extends ServiceEntityRepository
     }
 
     /**
-     * Recherche par titre/studio, avec filtre optionnel sur le genre.
-     *
      * @return Jeu[]
      */
     public function rechercher(?string $q, ?Genre $genre): array
@@ -42,8 +40,6 @@ class JeuRepository extends ServiceEntityRepository
     }
 
     /**
-     * Les jeux les mieux notés (au moins un avis).
-     *
      * @return array<int, array{jeu: Jeu, moyenne: float, nb: int}>
      */
     public function mieuxNotes(int $limite = 6): array
