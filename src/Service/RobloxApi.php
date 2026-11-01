@@ -37,10 +37,7 @@ class RobloxApi
         return $data['universeId'] ?? null;
     }
 
-    /**
-     * @param int[] $universeIds
-     * @return array<int, array<string, mixed>> universeId => données brutes de l'API
-     */
+    // universeId => infos brutes de l'API (nom, créateur, joueurs, visites...)
     public function infos(array $universeIds): array
     {
         if ($universeIds === []) {
@@ -62,10 +59,7 @@ class RobloxApi
         return $result;
     }
 
-    /**
-     * @param int[] $universeIds
-     * @return array<int, string> universeId => URL de l'icône
-     */
+    // universeId => url de l'icône carrée
     public function icones(array $universeIds): array
     {
         if ($universeIds === []) {
@@ -94,12 +88,7 @@ class RobloxApi
         return $result;
     }
 
-    /**
-     * Vignettes 16:9 des jeux (la première de chaque jeu).
-     *
-     * @param int[] $universeIds
-     * @return array<int, string> universeId => URL
-     */
+    // universeId => url de la première vignette 16:9
     public function vignettes(array $universeIds): array
     {
         if ($universeIds === []) {
@@ -129,9 +118,7 @@ class RobloxApi
         return $result;
     }
 
-    /**
-     * @return array<int, array{universeId: int, placeId: int, nom: string, joueurs: int, votes: int, icone: ?string, vignette: ?string}>
-     */
+    // recherche comme sur le site roblox, renvoie une liste de jeux (placeId, nom, joueurs, icone, vignette...)
     public function rechercher(string $q, int $limite = 12): array
     {
         try {
@@ -173,11 +160,7 @@ class RobloxApi
         return array_values($resultats);
     }
 
-    /**
-     * Remplit le jeu depuis Roblox. Renvoie les infos brutes de l'API, ou null si le jeu n'existe pas.
-     *
-     * @return array<string, mixed>|null
-     */
+    // remplit le jeu depuis roblox, renvoie les infos brutes (pour le genre) ou null si le jeu n'existe pas
     public function importer(Jeu $jeu, int $placeId): ?array
     {
         $universeId = $this->universeId($placeId);
@@ -218,11 +201,7 @@ class RobloxApi
         };
     }
 
-    /**
-     * Met à jour icône, joueurs en ligne et visites. Ne touche pas au titre ni à la description.
-     *
-     * @param Jeu[] $jeux
-     */
+    // met à jour image, joueurs en ligne et visites, par lots de 50 ; ne touche pas au titre ni à la description
     public function synchroniser(array $jeux): int
     {
         $parUniverse = [];

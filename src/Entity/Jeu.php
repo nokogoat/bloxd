@@ -275,9 +275,7 @@ class Jeu
         return round($total / $this->avis->count(), 1);
     }
 
-    /**
-     * @return array<int, int> note => nombre d'avis, pour l'histogramme
-     */
+    // note => nombre d'avis, pour l'histogramme
     public function getRepartition(): array
     {
         $repartition = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];

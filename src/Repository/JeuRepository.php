@@ -39,9 +39,7 @@ class JeuRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @return array<int, array{jeu: Jeu, moyenne: float, nb: int}>
-     */
+    // les jeux les mieux notés avec leur moyenne et leur nombre d'avis
     public function mieuxNotes(int $limite = 6): array
     {
         $rows = $this->createQueryBuilder('j')

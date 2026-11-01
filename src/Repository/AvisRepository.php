@@ -30,9 +30,7 @@ class AvisRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * @return array<int, int> note => nombre d'avis
-     */
+    // note => nombre d'avis, pour la page admin
     public function repartitionNotes(): array
     {
         $rows = $this->createQueryBuilder('a')
