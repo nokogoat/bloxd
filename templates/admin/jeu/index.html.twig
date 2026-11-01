@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Jeux{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Jeux ({{ jeus|length }})</h1>
+        <div>
+            <a href="{{ path('admin_index') }}">Retour admin</a>
+            <a class="btn" href="{{ path('admin_jeu_new') }}">Ajouter</a>
+        </div>
+    </div>
+
+    <section class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Titre</th><th>Studio</th><th>Genre</th><th>Année</th><th>Avis</th>
+                    <th>actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for jeu in jeus %}
+                <tr>
+                    <td>{{ jeu.titre }}</td><td>{{ jeu.studio }}</td><td>{{ jeu.genre.nom }}</td><td>{{ jeu.anneeSortie }}</td><td>{{ jeu.avis|length }}</td>
+                    <td class="actions">
+                        <a href="{{ path('admin_jeu_edit', {'id': jeu.id}) }}">modifier</a>
+                        {{ include('admin/jeu/_delete_form.html.twig') }}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucun enregistrement</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+{% endblock %}

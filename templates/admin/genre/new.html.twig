@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau genre - Admin{% endblock %}
+
+{% block body %}
+    <div class="card form-card">
+        <h1>Nouveau genre</h1>
+
+        {{ include('admin/genre/_form.html.twig') }}
+
+        <a href="{{ path('admin_genre_index') }}">retour à la liste</a>
+    </div>
+{% endblock %}

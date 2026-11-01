@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('admin_jeu_delete', {'id': jeu.id}) }}" onsubmit="return confirm('Supprimer ? Les avis associés seront supprimés aussi.');" class="inline">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ jeu.id) }}">
+    <button class="btn-link btn-danger-link">supprimer</button>
+</form>
