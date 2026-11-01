@@ -6,11 +6,11 @@
     <div class="admin-nav">
         <a class="btn" href="{{ path('admin_index') }}">Tableau de bord</a>
     </div>
-    <div class="caps"><span>Utilisateurs</span><span class="faible"><code>{{ path('admin_api_users') }}</code> · rôle en POST sur /admin/api/utilisateurs/{id}/admin</span></div>
+    <div class="caps"><span>Utilisateurs</span><span><code>{{ path('admin_api_users') }}</code> · rôle en POST sur /admin/api/utilisateurs/{id}/admin</span></div>
 
     <table id="table-users">
         <thead><tr><th>Pseudo</th><th>Email</th><th>Avis</th><th>Rôle</th><th></th></tr></thead>
-        <tbody><tr><td colspan="5" class="faible">Chargement</td></tr></tbody>
+        <tbody><tr><td colspan="5" class="muted">Chargement</td></tr></tbody>
     </table>
 
     <script>
@@ -23,7 +23,7 @@
                         <td><a href="/profil/${u.pseudo}">${u.pseudo}</a></td>
                         <td>${u.email}</td>
                         <td>${u.nbAvis}</td>
-                        <td>${u.admin ? '<span style="color: var(--orange)">admin</span>' : 'joueur'}</td>
+                        <td>${u.admin ? '<span style="color: var(--accent)">admin</span>' : '<span class="texte2">joueur</span>'}</td>
                         <td><button class="btn btn-petit" data-id="${u.id}">${u.admin ? 'Retirer admin' : 'Rendre admin'}</button></td>
                     </tr>`;
                 }

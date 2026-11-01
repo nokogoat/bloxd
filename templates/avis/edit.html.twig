@@ -5,9 +5,9 @@
 {% block body %}
     <div class="colonne" style="margin-top: 32px">
         <div class="caps"><span>Modifier mon avis</span></div>
-        <div class="avis-tete" style="margin-bottom: 12px">
+        <div class="avis-tete" style="margin-bottom: 16px">
             <a class="quoi" href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}">{{ avis.jeu.titre }}</a>
-            <span class="meta">{{ avis.jeu.anneeSortie }}</span>
+            <span class="mono">{{ avis.jeu.anneeSortie }}</span>
         </div>
         <div class="panneau">
             {{ form_start(form) }}

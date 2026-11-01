@@ -1,1 +1,1 @@
-<span class="etoiles {{ taille|default('') }}" title="{{ note }}/5">{% for i in 1..5 %}{% if i <= note %}★{% else %}<span class="off">★</span>{% endif %}{% endfor %}</span>
+<span class="note {{ taille|default('') }}" title="{{ note }}/5" aria-label="{{ note }} sur 5">{% for i in 1..5 %}<i class="{{ i <= note ? 'plein' }}"></i>{% endfor %}</span>

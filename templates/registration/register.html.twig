@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="colonne" style="margin: 48px auto 0">
-        <h1 class="serif" style="font-size: 32px">Créer un compte</h1>
+        <h1 style="font-size: 40px; letter-spacing: -.02em; margin-bottom: 20px">Créer un compte</h1>
         <div class="panneau">
             {{ form_errors(registrationForm) }}
             {{ form_start(registrationForm) }}
@@ -13,7 +13,7 @@
                 {{ form_row(registrationForm.plainPassword) }}
                 <button type="submit" class="btn btn-primary">C'est parti</button>
             {{ form_end(registrationForm) }}
-            <p class="meta" style="margin: 16px 0 0">Déjà inscrit ? <a href="{{ path('app_login') }}">Connexion</a></p>
+            <p class="texte2" style="margin: 20px 0 0; font-size: 15px">Déjà inscrit ? <a href="{{ path('app_login') }}">Connexion</a></p>
         </div>
     </div>
 {% endblock %}

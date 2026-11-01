@@ -11,10 +11,10 @@
         <button class="btn" type="submit">Chercher</button>
         <a class="btn" href="{{ path('app_jeu_index') }}">Retour au catalogue</a>
     </form>
-    <p class="meta">Les résultats viennent de l'API de Roblox. Ajouter un jeu l'importe dans le catalogue avec son image, sa description et ses stats.</p>
+    <p class="texte2" style="margin-top: 16px">Les résultats viennent de l'API de Roblox. Ajouter un jeu l'importe dans le catalogue avec son image, sa description et ses stats.</p>
 
     {% if q and resultats is empty %}
-        <p class="faible">Rien trouvé pour « {{ q }} », ou l'API Roblox ne répond pas.</p>
+        <p class="muted">Rien trouvé pour « {{ q }} », ou l'API Roblox ne répond pas</p>
     {% endif %}
 
     <div class="affiches">
@@ -27,9 +27,9 @@
                         <div class="vide" style="background: var(--panneau)">?</div>
                     {% endif %}
                 </div>
-                <div class="sous-affiche" style="display:block">
-                    <div class="titre">{{ r.nom }}</div>
-                    <div class="meta" style="margin: 2px 0 8px"><span class="en-ligne"></span>{{ r.joueurs|number_format(0, ',', ' ') }} en ligne</div>
+                <div class="sous-affiche">
+                    <span class="titre">{{ r.nom }}</span>
+                    <span class="mono muted" style="margin-bottom: 8px"><span class="en-ligne"></span>{{ r.joueurs|number_format(0, ',', ' ') }} en ligne</span>
                     {% if dejaLa[r.placeId] is defined %}
                         <a class="btn btn-petit" href="{{ path('app_jeu_show', {id: dejaLa[r.placeId].id}) }}">Déjà là, voir la fiche</a>
                     {% elseif app.user %}

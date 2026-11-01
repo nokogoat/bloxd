@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="colonne" style="margin: 48px auto 0">
-        <h1 class="serif" style="font-size: 32px">Connexion</h1>
+        <h1 style="font-size: 40px; letter-spacing: -.02em; margin-bottom: 20px">Connexion</h1>
         <form method="post" class="panneau">
             {% if error %}
                 <div class="flash flash-error" style="margin-top:0">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -19,7 +19,7 @@
             <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
             <button class="btn btn-primary" type="submit">Se connecter</button>
-            <p class="meta" style="margin: 16px 0 0">Pas encore de compte ? <a href="{{ path('app_register') }}">Inscris-toi</a></p>
+            <p class="texte2" style="margin: 20px 0 0; font-size: 15px">Pas encore de compte ? <a href="{{ path('app_register') }}">Inscris-toi</a></p>
         </form>
     </div>
 {% endblock %}

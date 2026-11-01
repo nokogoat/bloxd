@@ -6,7 +6,7 @@
 
 {% block backdrop %}
     {% if jeu.vignetteUrl %}
-        <div class="backdrop"><img src="{{ jeu.vignetteUrl }}" alt=""></div>
+        <div class="backdrop jeu"><img src="{{ jeu.vignetteUrl }}" alt="" fetchpriority="high"></div>
     {% endif %}
 {% endblock %}
 
@@ -19,32 +19,32 @@
             {% include '_affiche.html.twig' with {jeu: jeu} %}
         </div>
         <div>
-            <h1>{{ jeu.titre }} <span class="annee">{{ jeu.anneeSortie }}</span></h1>
-            <div class="ligne-meta">par <strong>{{ jeu.studio }}</strong> · <a href="{{ path('app_jeu_index', {genre: jeu.genre.id}) }}">{{ jeu.genre.nom }}</a></div>
+            <h1>{{ jeu.titre }}</h1>
+            <div class="ligne-meta">{{ jeu.anneeSortie }} · {{ jeu.studio }} · <a href="{{ path('app_jeu_index', {genre: jeu.genre.id}) }}">{{ jeu.genre.nom }}</a></div>
             <p class="description">{{ jeu.description }}</p>
         </div>
         <aside>
             <div class="panneau">
-                <h3>Notes</h3>
+                <h3>Note des joueurs</h3>
                 {% if jeu.noteMoyenne %}
-                    <div class="note-moyenne">
-                        <span class="note-chiffre">{{ jeu.noteMoyenne|number_format(1, ',') }}</span>
-                        {% include '_etoiles.html.twig' with {note: jeu.noteMoyenne|round} %}
-                        <span class="meta">{{ jeu.avis|length }} avis</span>
+                    <div class="bloc-note">
+                        <span class="chiffre">{{ jeu.noteMoyenne|number_format(1, ',') }}</span>
+                        <span class="mono">sur 5 · {{ jeu.avis|length }} avis</span>
                     </div>
-                    <div class="histo">
+                    {% include '_etoiles.html.twig' with {note: jeu.noteMoyenne|round, taille: 'grande'} %}
+                    <div class="histo" style="margin-top: 20px">
                         {% for note, nb in repartition %}
-                            <div style="height: {{ (100 * nb / maxRep)|round }}%" title="{{ nb }} avis à {{ note }} étoile{{ note > 1 ? 's' }}"></div>
+                            <div class="{{ nb == maxRep and nb > 0 ? 'max' }}" style="height: {{ (100 * nb / maxRep)|round }}%" title="{{ nb }} avis"></div>
                         {% endfor %}
                     </div>
-                    <div class="histo-legende"><span>★</span><span>★★★★★</span></div>
+                    <div class="histo-legende"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
                 {% else %}
-                    <p class="faible" style="margin:0">Pas encore de note</p>
+                    <p class="muted" style="margin:0">Pas encore de note</p>
                 {% endif %}
             </div>
             {% if jeu.placeId %}
                 <div class="panneau">
-                    <h3>Sur Roblox</h3>
+                    <h3>En ce moment sur Roblox</h3>
                     <div class="stats-roblox">
                         {% if jeu.joueursEnLigne is not null %}
                             <div><strong class="en-ligne">{{ jeu.joueursEnLigne|number_format(0, ',', ' ') }}</strong><span>en ligne</span></div>
@@ -64,7 +64,7 @@
             <div class="caps"><span>{{ monAvis ? 'Ton avis' : 'Noter ce jeu' }}</span></div>
             {% if monAvis %}
                 <div class="panneau">
-                    {% include '_etoiles.html.twig' with {note: monAvis.note, taille: 'grandes'} %}
+                    {% include '_etoiles.html.twig' with {note: monAvis.note, taille: 'grande'} %}
                     {% if monAvis.commentaire %}<p class="avis-texte">{{ monAvis.commentaire }}</p>{% endif %}
                     <p style="margin: 14px 0 0; display: flex; gap: 8px">
                         <a class="btn btn-petit" href="{{ path('app_avis_edit', {id: monAvis.id}) }}">Modifier</a>
@@ -90,23 +90,22 @@
         </section>
 
         <section>
-            <div class="caps"><span>Avis des joueurs</span><span>{{ jeu.avis|length }}</span></div>
+            <div class="caps"><span>Avis des joueurs</span><span class="mono">{{ jeu.avis|length }}</span></div>
             <div class="avis-liste">
                 {% for avis in jeu.avis %}
                     <article class="avis">
                         {% include '_avatar.html.twig' with {user: avis.auteur} %}
                         <div>
                             <div class="avis-tete">
-                                <span class="meta">Avis de</span>
                                 <a class="qui" href="{{ path('app_profil', {pseudo: avis.auteur.pseudo}) }}">{{ avis.auteur.pseudo }}</a>
                                 {% include '_etoiles.html.twig' with {note: avis.note} %}
-                                <span class="meta">{{ avis.creeLe|date('d/m/Y') }}</span>
+                                <span class="mono">{{ avis.creeLe|date('d/m/Y') }}</span>
                             </div>
                             {% if avis.commentaire %}<p class="avis-texte">{{ avis.commentaire }}</p>{% endif %}
                         </div>
                     </article>
                 {% else %}
-                    <p class="faible">Personne n'a encore donné son avis.</p>
+                    <p class="muted">Personne n'a encore donné son avis</p>
                 {% endfor %}
             </div>
         </section>

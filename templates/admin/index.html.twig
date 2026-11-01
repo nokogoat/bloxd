@@ -18,33 +18,33 @@
 
     <div class="deux-colonnes">
         <div class="panneau">
-            <h3>Répartition des notes <span class="faible">· <code>{{ path('admin_api_stats') }}</code></span></h3>
+            <h3>Répartition des notes · <code>{{ path('admin_api_stats') }}</code></h3>
             <div class="repartition" id="repartition"></div>
         </div>
         <div class="panneau">
-            <h3>Top 10 <span class="faible">· <code>{{ path('admin_api_top_jeux') }}</code></span></h3>
+            <h3>Top 10 · <code>{{ path('admin_api_top_jeux') }}</code></h3>
             <table id="table-top">
                 <thead><tr><th>Jeu</th><th>Genre</th><th>Moyenne</th><th>Avis</th></tr></thead>
-                <tbody><tr><td colspan="4" class="faible">Chargement</td></tr></tbody>
+                <tbody><tr><td colspan="4" class="muted">Chargement</td></tr></tbody>
             </table>
         </div>
     </div>
 
-    <div class="caps"><span>Derniers avis</span><span class="faible"><code>{{ path('admin_api_avis') }}</code> · suppression en DELETE</span></div>
+    <div class="caps"><span>Derniers avis</span><span><code>{{ path('admin_api_avis') }}</code> · suppression en DELETE</span></div>
     <table id="table-avis">
         <thead><tr><th>Date</th><th>Jeu</th><th>Auteur</th><th>Note</th><th>Commentaire</th><th></th></tr></thead>
-        <tbody><tr><td colspan="6" class="faible">Chargement</td></tr></tbody>
+        <tbody><tr><td colspan="6" class="muted">Chargement</td></tr></tbody>
     </table>
 
     <script>
-        const etoiles = n => '<span class="etoiles">' + '★'.repeat(n) + '<span class="off">' + '★'.repeat(5 - n) + '</span></span>';
+        const etoiles = n => '<span class="note">' + Array.from({length: 5}, (_, i) => `<i class="${i < n ? 'plein' : ''}"></i>`).join('') + '</span>';
 
         fetch('{{ path('admin_api_stats') }}').then(r => r.json()).then(d => {
             const max = Math.max(1, ...Object.values(d.repartitionNotes));
             const div = document.getElementById('repartition');
             for (let note = 5; note >= 1; note--) {
                 const nb = d.repartitionNotes[note];
-                div.innerHTML += `<div class="ligne">${etoiles(note)}<div class="barre"><div style="width:${100 * nb / max}%"></div></div><span class="nb">${nb}</span></div>`;
+                div.innerHTML += `<div class="ligne ${nb === max ? 'max' : ''}">${etoiles(note)}<div class="barre"><div style="width:${100 * nb / max}%"></div></div><span class="nb">${nb}</span></div>`;
             }
         });
 
@@ -52,7 +52,7 @@
             const tbody = document.querySelector('#table-top tbody');
             tbody.innerHTML = '';
             for (const r of rows) {
-                tbody.innerHTML += `<tr><td><a href="/jeux/${r.id}">${r.titre}</a></td><td>${r.genre}</td><td>${r.moyenne}</td><td>${r.nbAvis}</td></tr>`;
+                tbody.innerHTML += `<tr><td><a href="/jeux/${r.id}">${r.titre}</a></td><td>${r.genre}</td><td>${r.moyenne.toLocaleString('fr-FR', {minimumFractionDigits: 1, maximumFractionDigits: 1})}</td><td>${r.nbAvis}</td></tr>`;
             }
         });
 
@@ -62,7 +62,7 @@
                 tbodyAvis.innerHTML = '';
                 for (const r of rows) {
                     tbodyAvis.innerHTML += `<tr>
-                        <td class="meta">${r.creeLe}</td>
+                        <td class="mono muted">${r.creeLe}</td>
                         <td><a href="/jeux/${r.jeuId}">${r.jeu}</a></td>
                         <td>${r.auteur}</td>
                         <td>${etoiles(r.note)}</td>

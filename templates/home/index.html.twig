@@ -6,42 +6,44 @@
 
 {% block backdrop %}
     {% if vedette and vedette.vignetteUrl %}
-        <div class="backdrop"><img src="{{ vedette.vignetteUrl }}" alt=""></div>
+        <div class="backdrop"><img src="{{ vedette.vignetteUrl }}" alt="{{ vedette.titre }}" fetchpriority="high"></div>
     {% endif %}
 {% endblock %}
 
 {% block body %}
     <section class="hero">
-        <h1>Garde la trace des jeux Roblox auxquels tu as joué.</h1>
-        <p>Note-les sur cinq. Dis ce que tu en as pensé. Vois ce que les autres en disent.</p>
-        {% if app.user %}
-            <a class="btn btn-primary grand" href="{{ path('app_jeu_index') }}">Trouver un jeu à noter</a>
-        {% else %}
-            <a class="btn btn-primary grand" href="{{ path('app_register') }}">Créer un compte, c'est gratuit</a>
-        {% endif %}
-        <div class="compteurs">
-            <div><strong>{{ nbJeux }}</strong><span>jeux</span></div>
-            <div><strong>{{ nbAvis }}</strong><span>avis</span></div>
-            <div><strong>∞</strong><span>via Roblox</span></div>
+        <h1>Les jeux Roblox que tu as joués, notés sur cinq</h1>
+        <p>Un journal de tes parties, une note en briques pour chaque jeu, et ce que les autres joueurs en ont pensé.</p>
+        <div class="actions">
+            {% if app.user %}
+                <a class="btn btn-primary btn-grand" href="{{ path('app_jeu_index') }}">Trouver un jeu à noter</a>
+                <a class="lien" href="{{ path('app_profil', {pseudo: app.user.pseudo}) }}">Mes avis</a>
+            {% else %}
+                <a class="btn btn-primary btn-grand" href="{{ path('app_register') }}">Créer un compte</a>
+                <a class="lien" href="{{ path('app_jeu_index') }}">Voir le catalogue</a>
+            {% endif %}
         </div>
+        <div class="chiffres"><span><b>{{ nbJeux }}</b> jeux</span><span><b>{{ nbAvis }}</b> avis</span>{% if vedette %}<span>en fond, <b>{{ vedette.titre }}</b></span>{% endif %}</div>
     </section>
 
-    <div class="caps"><span>Les mieux notés</span><a href="{{ path('app_jeu_index') }}">Tout le catalogue</a></div>
-    {% if mieuxNotes is empty %}
-        <p class="faible">Pas encore d'avis</p>
-    {% else %}
-        <div class="affiches six">
-            {% for row in mieuxNotes %}
-                <div>
-                    {% include '_affiche.html.twig' with {jeu: row.jeu} %}
-                    <div class="sous-affiche">
-                        {% include '_etoiles.html.twig' with {note: row.moyenne|round} %}
-                        <span class="meta">{{ row.moyenne|number_format(1, ',') }} · {{ row.nb }} avis</span>
+    <section class="mur">
+        <div class="mur-tete"><h2>Les mieux notés</h2><a href="{{ path('app_jeu_index') }}">Tout le catalogue</a></div>
+        {% if mieuxNotes is empty %}
+            <p class="muted">Pas encore d'avis</p>
+        {% else %}
+            <div class="affiches six">
+                {% for row in mieuxNotes %}
+                    <div>
+                        {% include '_affiche.html.twig' with {jeu: row.jeu} %}
+                        <div class="sous-affiche">
+                            <span class="titre">{{ row.jeu.titre }}</span>
+                            <span class="ligne">{% include '_etoiles.html.twig' with {note: row.moyenne|round} %}<span class="mono">{{ row.moyenne|number_format(1, ',') }} · {{ row.nb }} avis</span></span>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
 
     <div class="caps"><span>Derniers avis</span></div>
     <div class="avis-liste">
@@ -52,14 +54,14 @@
                     <div class="avis-tete">
                         <a class="quoi" href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}">{{ avis.jeu.titre }}</a>
                         {% include '_etoiles.html.twig' with {note: avis.note} %}
-                        <span class="meta">par <a href="{{ path('app_profil', {pseudo: avis.auteur.pseudo}) }}">{{ avis.auteur.pseudo }}</a>, {{ avis.creeLe|date('d/m/Y') }}</span>
+                        <span class="mono">par <a href="{{ path('app_profil', {pseudo: avis.auteur.pseudo}) }}">{{ avis.auteur.pseudo }}</a> · {{ avis.creeLe|date('d/m/Y') }}</span>
                     </div>
                     {% if avis.commentaire %}<p class="avis-texte">{{ avis.commentaire }}</p>{% endif %}
                 </div>
                 {% include '_affiche.html.twig' with {jeu: avis.jeu} %}
             </article>
         {% else %}
-            <p class="faible">Aucun avis pour le moment</p>
+            <p class="muted">Aucun avis pour le moment</p>
         {% endfor %}
     </div>
 {% endblock %}
