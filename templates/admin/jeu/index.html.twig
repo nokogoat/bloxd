@@ -7,7 +7,9 @@
         <h1>Jeux ({{ jeus|length }})</h1>
         <div>
             <a href="{{ path('admin_index') }}">Retour admin</a>
-            <a class="btn" href="{{ path('admin_jeu_new') }}">Ajouter</a>
+            <button class="btn btn-secondary" id="btn-sync-tous">Synchroniser avec Roblox</button>
+            <a class="btn btn-secondary" href="{{ path('admin_jeu_importer') }}">Importer depuis Roblox</a>
+            <a class="btn" href="{{ path('admin_jeu_new') }}">Ajouter à la main</a>
         </div>
     </div>
 
@@ -15,25 +17,52 @@
         <table>
             <thead>
                 <tr>
-                    <th>Titre</th><th>Studio</th><th>Genre</th><th>Année</th><th>Avis</th>
+                    <th></th><th>Titre</th><th>Studio</th><th>Genre</th><th>Année</th><th>Avis</th><th>En ligne</th>
                     <th>actions</th>
                 </tr>
             </thead>
             <tbody>
             {% for jeu in jeus %}
-                <tr>
+                <tr data-id="{{ jeu.id }}">
+                    <td>{% include '_jaquette.html.twig' with {jeu: jeu, taille: 'mini'} %}</td>
                     <td>{{ jeu.titre }}</td><td>{{ jeu.studio }}</td><td>{{ jeu.genre.nom }}</td><td>{{ jeu.anneeSortie }}</td><td>{{ jeu.avis|length }}</td>
+                    <td class="en-ligne">{{ jeu.joueursEnLigne is not null ? jeu.joueursEnLigne|number_format(0, ',', ' ') : '—' }}</td>
                     <td class="actions">
+                        {% if jeu.placeId %}<button class="btn-link" data-sync="{{ jeu.id }}">sync</button>{% endif %}
                         <a href="{{ path('admin_jeu_edit', {'id': jeu.id}) }}">modifier</a>
                         {{ include('admin/jeu/_delete_form.html.twig') }}
                     </td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="6">Aucun enregistrement</td>
+                    <td colspan="8">Aucun enregistrement</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </section>
+
+    <script>
+        // synchronisation d'un seul jeu : POST /admin/api/jeux/{id}/sync, puis mise à jour de la ligne
+        document.querySelectorAll('button[data-sync]').forEach(btn => btn.addEventListener('click', async () => {
+            btn.textContent = '...';
+            const r = await fetch(`/admin/api/jeux/${btn.dataset.sync}/sync`, { method: 'POST' });
+            const d = await r.json();
+            if (!r.ok) { alert(d.error); btn.textContent = 'sync'; return; }
+            const tr = btn.closest('tr');
+            tr.querySelector('.en-ligne').textContent = d.joueursEnLigne.toLocaleString('fr-FR');
+            if (d.imageUrl) tr.querySelector('.jaquette').innerHTML = `<img src="${d.imageUrl}" alt="">`;
+            btn.textContent = 'sync';
+        }));
+
+        // tout synchroniser : POST /admin/api/jeux/sync puis rechargement
+        document.getElementById('btn-sync-tous').addEventListener('click', async (e) => {
+            e.target.disabled = true;
+            e.target.textContent = 'Synchronisation...';
+            const r = await fetch('{{ path('admin_api_jeux_sync') }}', { method: 'POST' });
+            const d = await r.json();
+            alert(`${d.misAJour} jeu(x) mis à jour sur ${d.total}.`);
+            location.reload();
+        });
+    </script>
 {% endblock %}

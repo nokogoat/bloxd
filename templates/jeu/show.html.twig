@@ -16,6 +16,18 @@
                 {% endif %}
             </p>
             <p>{{ jeu.description|nl2br }}</p>
+            {% if jeu.placeId %}
+                <p class="roblox-stats">
+                    {% if jeu.joueursEnLigne is not null %}
+                        <span><strong>{{ jeu.joueursEnLigne|number_format(0, ',', ' ') }}</strong> en ligne</span>
+                    {% endif %}
+                    {% if jeu.visites %}
+                        <span><strong>{{ jeu.visites|number_format(0, ',', ' ') }}</strong> visites</span>
+                    {% endif %}
+                    <a class="btn btn-small btn-secondary" href="{{ jeu.urlRoblox }}" target="_blank" rel="noopener">Voir sur Roblox</a>
+                    {% if jeu.majRoblox %}<span class="muted">stats Roblox du {{ jeu.majRoblox|date('d/m/Y H:i') }}</span>{% endif %}
+                </p>
+            {% endif %}
         </div>
     </div>
 

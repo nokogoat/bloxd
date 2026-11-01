@@ -32,7 +32,12 @@ class JeuType extends AbstractType
                 'label' => 'Année de sortie',
             ])
             ->add('couleur', ColorType::class, [
-                'label' => 'Couleur de la jaquette',
+                'label' => 'Couleur de la jaquette (si pas d\'image Roblox)',
+            ])
+            ->add('placeId', IntegerType::class, [
+                'label' => 'ID Roblox (le nombre dans roblox.com/games/...)',
+                'required' => false,
+                'help' => 'Permet de récupérer l\'icône et les stats via l\'API Roblox.',
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',

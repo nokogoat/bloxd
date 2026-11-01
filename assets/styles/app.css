@@ -138,3 +138,10 @@ code { background: var(--fond3); padding: 0.1rem 0.3rem; border-radius: 4px; fon
 .barre-ligne { display: grid; grid-template-columns: 5rem 1fr 2rem; gap: 0.5rem; align-items: center; color: var(--vert); }
 .barre { background: var(--fond3); border-radius: 4px; height: 14px; overflow: hidden; }
 .barre div { background: var(--vert); height: 100%; }
+
+/* icônes Roblox */
+.jaquette.avec-image { padding: 0; overflow: hidden; background: var(--fond3); }
+.jaquette img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.roblox-stats { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.roblox-stats strong { color: var(--orange); }
+td .jaquette.mini { width: 40px; }

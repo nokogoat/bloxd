@@ -3,11 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Avis;
+use App\Entity\Jeu;
 use App\Entity\User;
 use App\Repository\AvisRepository;
 use App\Repository\GenreRepository;
 use App\Repository\JeuRepository;
 use App\Repository\UserRepository;
+use App\Service\RobloxApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -50,6 +52,39 @@ class ApiController extends AbstractController
         }
 
         return $this->json($data);
+    }
+
+    #[Route('/jeux/sync', name: 'admin_api_jeux_sync', methods: ['POST'])]
+    public function syncJeux(JeuRepository $jeuRepository, RobloxApi $robloxApi, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $jeux = $jeuRepository->findAll();
+        $nb = $robloxApi->synchroniser($jeux);
+        $entityManager->flush();
+
+        return $this->json(['total' => count($jeux), 'misAJour' => $nb]);
+    }
+
+    #[Route('/jeux/{id}/sync', name: 'admin_api_jeu_sync', methods: ['POST'])]
+    public function syncJeu(Jeu $jeu, RobloxApi $robloxApi, EntityManagerInterface $entityManager): JsonResponse
+    {
+        if ($jeu->getPlaceId() === null) {
+            return $this->json(['error' => 'Ce jeu n\'a pas d\'ID Roblox.'], 400);
+        }
+
+        $nb = $robloxApi->synchroniser([$jeu]);
+        $entityManager->flush();
+
+        if ($nb === 0) {
+            return $this->json(['error' => 'L\'API Roblox n\'a pas répondu pour ce jeu.'], 502);
+        }
+
+        return $this->json([
+            'id' => $jeu->getId(),
+            'imageUrl' => $jeu->getImageUrl(),
+            'joueursEnLigne' => $jeu->getJoueursEnLigne(),
+            'visites' => $jeu->getVisites(),
+            'majRoblox' => $jeu->getMajRoblox()?->format('d/m/Y H:i'),
+        ]);
     }
 
     #[Route('/avis', name: 'admin_api_avis', methods: ['GET'])]

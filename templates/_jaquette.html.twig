@@ -1,5 +1,9 @@
-{# jaquette générée en CSS à partir de la couleur du jeu #}
-<a class="jaquette {{ taille|default('') }}" href="{{ path('app_jeu_show', {id: jeu.id}) }}" style="--c: {{ jeu.couleur }}" title="{{ jeu.titre }}">
-    <span class="initiales">{{ jeu.initiales }}</span>
-    <span class="jaquette-titre">{{ jeu.titre }}</span>
+{# jaquette : l'icône Roblox si on l'a récupérée, sinon un bloc de couleur avec les initiales #}
+<a class="jaquette {{ taille|default('') }} {{ jeu.imageUrl ? 'avec-image' }}" href="{{ path('app_jeu_show', {id: jeu.id}) }}" style="--c: {{ jeu.couleur }}" title="{{ jeu.titre }}">
+    {% if jeu.imageUrl %}
+        <img src="{{ jeu.imageUrl }}" alt="{{ jeu.titre }}" loading="lazy">
+    {% else %}
+        <span class="initiales">{{ jeu.initiales }}</span>
+        <span class="jaquette-titre">{{ jeu.titre }}</span>
+    {% endif %}
 </a>

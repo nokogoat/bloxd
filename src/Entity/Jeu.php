@@ -42,6 +42,26 @@ class Jeu
     #[ORM\JoinColumn(nullable: false)]
     private ?Genre $genre = null;
 
+    // identifiant du jeu sur Roblox (le nombre dans l'URL roblox.com/games/XXXX), facultatif
+    #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    private ?int $placeId = null;
+
+    // identifiant "universe" utilisé par l'API Roblox, retrouvé à partir du placeId
+    #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    private ?int $universeId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imageUrl = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $joueursEnLigne = null;
+
+    #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    private ?int $visites = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $majRoblox = null;
+
     /**
      * @var Collection<int, Avis>
      */
@@ -129,6 +149,83 @@ class Jeu
         $this->genre = $genre;
 
         return $this;
+    }
+
+    public function getPlaceId(): ?int
+    {
+        return $this->placeId;
+    }
+
+    public function setPlaceId(?int $placeId): static
+    {
+        $this->placeId = $placeId;
+
+        return $this;
+    }
+
+    public function getUniverseId(): ?int
+    {
+        return $this->universeId;
+    }
+
+    public function setUniverseId(?int $universeId): static
+    {
+        $this->universeId = $universeId;
+
+        return $this;
+    }
+
+    public function getImageUrl(): ?string
+    {
+        return $this->imageUrl;
+    }
+
+    public function setImageUrl(?string $imageUrl): static
+    {
+        $this->imageUrl = $imageUrl;
+
+        return $this;
+    }
+
+    public function getJoueursEnLigne(): ?int
+    {
+        return $this->joueursEnLigne;
+    }
+
+    public function setJoueursEnLigne(?int $joueursEnLigne): static
+    {
+        $this->joueursEnLigne = $joueursEnLigne;
+
+        return $this;
+    }
+
+    public function getVisites(): ?int
+    {
+        return $this->visites;
+    }
+
+    public function setVisites(?int $visites): static
+    {
+        $this->visites = $visites;
+
+        return $this;
+    }
+
+    public function getMajRoblox(): ?\DateTimeImmutable
+    {
+        return $this->majRoblox;
+    }
+
+    public function setMajRoblox(?\DateTimeImmutable $majRoblox): static
+    {
+        $this->majRoblox = $majRoblox;
+
+        return $this;
+    }
+
+    public function getUrlRoblox(): ?string
+    {
+        return $this->placeId ? 'https://www.roblox.com/games/'.$this->placeId : null;
     }
 
     /**
