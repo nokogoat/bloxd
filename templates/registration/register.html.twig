@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription - Bloxd{% endblock %}
+{% block title %}Inscription{% endblock %}
 
 {% block body %}
-    <div class="card form-card">
+    <div class="col-md-5">
         <h1>Inscription</h1>
 
         {{ form_errors(registrationForm) }}
@@ -13,8 +13,8 @@
             {{ form_row(registrationForm.email) }}
             {{ form_row(registrationForm.plainPassword) }}
 
-            <button type="submit" class="btn">Créer mon compte</button>
+            <button type="submit" class="btn btn-primary">S'inscrire</button>
+            <a href="{{ path('app_login') }}" class="btn btn-link">Déjà un compte ?</a>
         {{ form_end(registrationForm) }}
-        <p class="muted">Déjà un compte ? <a href="{{ path('app_login') }}">Connexion</a></p>
     </div>
 {% endblock %}

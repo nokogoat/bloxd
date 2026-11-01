@@ -1,1 +1,1 @@
-<span class="briques {{ taille|default('') }}" title="{{ note }}/5" aria-label="{{ note }} sur 5">{% for i in 1..5 %}<i class="{{ i <= note ? 'plein' }}"></i>{% endfor %}</span>
+<span class="etoiles" title="{{ note }}/5">{% for i in 1..5 %}{{ i <= note ? '★' : '☆' }}{% endfor %}</span>

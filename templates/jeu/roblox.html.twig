@@ -1,44 +1,52 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Chercher sur Roblox - Bloxd{% endblock %}
+{% block title %}Chercher sur Roblox{% endblock %}
 
 {% block body %}
-    <div class="page-head">
-        <h1>Chercher sur Roblox</h1>
-        <a href="{{ path('app_jeu_index') }}">Retour au catalogue</a>
-    </div>
+    <h1>Chercher sur Roblox</h1>
+    <p>La recherche passe par l'API de Roblox. En ajoutant un jeu, on récupère son image, sa description et ses stats.</p>
 
-    <form method="get" class="inline-form recherche-roblox">
-        <input type="search" name="q" value="{{ q }}" placeholder="Nom d'un jeu Roblox" required autofocus>
-        <button class="btn" type="submit">Chercher</button>
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-auto">
+            <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Nom du jeu" required>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-secondary">Chercher</button>
+            <a href="{{ path('app_jeu_index') }}" class="btn btn-link">Retour aux jeux</a>
+        </div>
     </form>
-    <p class="muted">Résultats fournis par l'API de recherche de Roblox. Ajouter un jeu l'importe dans le catalogue avec son icône, sa description et ses stats.</p>
 
     {% if q and resultats is empty %}
-        <p class="muted">Rien trouvé pour « {{ q }} », ou l'API Roblox ne répond pas</p>
+        <p>Rien trouvé pour "{{ q }}" (ou l'API Roblox ne répond pas).</p>
     {% endif %}
 
-    <div class="grille-jaquettes">
+    <div class="row row-cols-2 row-cols-md-4 g-3">
         {% for r in resultats %}
-            <div class="carte-jeu resultat-roblox">
-                <div class="jaquette {{ r.icone ? 'avec-image' }}" style="--c: #444">
-                    {% if r.icone %}<img src="{{ r.icone }}" alt="" loading="lazy">{% else %}<span class="initiales">?</span>{% endif %}
-                </div>
-                <div class="carte-infos">
-                    <strong>{{ r.nom }}</strong>
-                    <span class="muted">{{ r.joueurs|number_format(0, ',', ' ') }} en ligne · {{ r.votes|number_format(0, ',', ' ') }} pouces levés</span>
-                    {% if dejaLa[r.placeId] is defined %}
-                        <a class="btn btn-small btn-secondary" href="{{ path('app_jeu_show', {id: dejaLa[r.placeId].id}) }}">Déjà là, voir la fiche</a>
-                    {% elseif app.user %}
-                        <form method="post" action="{{ path('app_jeu_roblox_ajouter') }}">
-                            <input type="hidden" name="placeId" value="{{ r.placeId }}">
-                            <input type="hidden" name="q" value="{{ q }}">
-                            <input type="hidden" name="_token" value="{{ csrf_token('ajouter-roblox') }}">
-                            <button class="btn btn-small" type="submit">Ajouter au catalogue</button>
-                        </form>
+            <div class="col">
+                <div class="card h-100">
+                    {% if r.vignette %}
+                        <img src="{{ r.vignette }}" class="vignette card-img-top" alt="">
+                    {% elseif r.icone %}
+                        <img src="{{ r.icone }}" class="vignette card-img-top" alt="">
                     {% else %}
-                        <a class="btn btn-small btn-secondary" href="{{ path('app_login') }}">Connecte-toi pour l'ajouter</a>
+                        <div class="vignette-vide card-img-top bg-secondary">?</div>
                     {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ r.nom }}</h6>
+                        <small class="text-muted d-block mb-2">{{ r.joueurs|number_format(0, ',', ' ') }} en ligne</small>
+                        {% if dejaLa[r.placeId] is defined %}
+                            <a href="{{ path('app_jeu_show', {id: dejaLa[r.placeId].id}) }}" class="btn btn-sm btn-outline-secondary">Déjà dans le catalogue</a>
+                        {% elseif app.user %}
+                            <form method="post" action="{{ path('app_jeu_roblox_ajouter') }}">
+                                <input type="hidden" name="placeId" value="{{ r.placeId }}">
+                                <input type="hidden" name="q" value="{{ q }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('ajouter-roblox') }}">
+                                <button class="btn btn-sm btn-primary">Ajouter</button>
+                            </form>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="btn btn-sm btn-outline-primary">Se connecter pour ajouter</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         {% endfor %}

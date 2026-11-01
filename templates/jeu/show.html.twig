@@ -1,88 +1,72 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ jeu.titre }} - Bloxd{% endblock %}
+{% block title %}{{ jeu.titre }}{% endblock %}
 
 {% block body %}
-    <div class="fiche">
-        {% include '_jaquette.html.twig' with {jeu: jeu, taille: 'grande'} %}
-        <div>
-            <h1>{{ jeu.titre }} <span class="muted annee">{{ jeu.anneeSortie }}</span></h1>
-            <p class="muted">par {{ jeu.studio }} · <a href="{{ path('app_jeu_index', {genre: jeu.genre.id}) }}">{{ jeu.genre.nom }}</a></p>
-            <div class="note-grande">
+    <div class="row mb-4">
+        <div class="col-md-5">
+            {% include '_jaquette.html.twig' with {jeu: jeu} %}
+        </div>
+        <div class="col-md-7">
+            <h1>{{ jeu.titre }} <small class="text-muted">({{ jeu.anneeSortie }})</small></h1>
+            <p class="text-muted">par {{ jeu.studio }} · <a href="{{ path('app_jeu_index', {genre: jeu.genre.id}) }}">{{ jeu.genre.nom }}</a></p>
+            <p class="fs-4">
                 {% if jeu.noteMoyenne %}
-                    <strong>{{ jeu.noteMoyenne|number_format(1, ',') }}</strong>
-                    {% include '_etoiles.html.twig' with {note: jeu.noteMoyenne|round, taille: 'grandes'} %}
-                    <span class="muted">{{ jeu.avis|length }} avis</span>
+                    {% include '_etoiles.html.twig' with {note: jeu.noteMoyenne|round} %} {{ jeu.noteMoyenne }}/5 <small class="text-muted">({{ jeu.avis|length }} avis)</small>
                 {% else %}
-                    <span class="muted">Pas encore de note</span>
+                    <span class="text-muted">Pas encore de note</span>
                 {% endif %}
-            </div>
+            </p>
             <p class="description">{{ jeu.description }}</p>
             {% if jeu.placeId %}
-                <p class="roblox-stats">
-                    {% if jeu.joueursEnLigne is not null %}
-                        <span><strong>{{ jeu.joueursEnLigne|number_format(0, ',', ' ') }}</strong> en ligne</span>
-                    {% endif %}
-                    {% if jeu.visites %}
-                        <span><strong>{{ jeu.visites|number_format(0, ',', ' ') }}</strong> visites</span>
-                    {% endif %}
-                    <a class="btn btn-small btn-secondary" href="{{ jeu.urlRoblox }}" target="_blank" rel="noopener">Voir sur Roblox</a>
-                    {% if jeu.majRoblox %}<span class="muted">stats Roblox du {{ jeu.majRoblox|date('d/m/Y H:i') }}</span>{% endif %}
+                <p>
+                    {% if jeu.joueursEnLigne is not null %}<span class="badge text-bg-success">{{ jeu.joueursEnLigne|number_format(0, ',', ' ') }} en ligne</span>{% endif %}
+                    {% if jeu.visites %}<span class="badge text-bg-secondary">{{ jeu.visites|number_format(0, ',', ' ') }} visites</span>{% endif %}
+                    <a href="{{ jeu.urlRoblox }}" target="_blank" class="btn btn-sm btn-outline-dark">Voir sur Roblox</a>
                 </p>
             {% endif %}
         </div>
     </div>
 
-    <div class="cols">
-        <section class="card">
-            {% if monAvis %}
-                <h2>Ton avis</h2>
-                {% include '_etoiles.html.twig' with {note: monAvis.note} %}
-                {% if monAvis.commentaire %}<p>{{ monAvis.commentaire }}</p>{% endif %}
-                <p class="actions">
-                    <a class="btn btn-small btn-secondary" href="{{ path('app_avis_edit', {id: monAvis.id}) }}">Modifier</a>
-                    <form method="post" action="{{ path('app_avis_delete', {id: monAvis.id}) }}" onsubmit="return confirm('Supprimer ton avis ?');" class="inline">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ monAvis.id) }}">
-                        <button class="btn btn-small btn-danger">Supprimer</button>
-                    </form>
-                </p>
-            {% elseif form %}
-                <h2>Donne ton avis</h2>
-                {{ form_start(form) }}
-                    {{ form_label(form.note) }}
-                    {{ form_errors(form.note) }}
-                    <div class="choix-notes">
-                        {% for choix in form.note %}
-                            <label class="choix-note" for="{{ choix.vars.id }}">
-                                {{ form_widget(choix) }}
-                                {% include '_etoiles.html.twig' with {note: choix.vars.value} %}
-                                <span>{{ choix.vars.label }}</span>
-                            </label>
-                        {% endfor %}
-                    </div>
-                    {{ form_row(form.commentaire) }}
-                    <button class="btn" type="submit">Publier</button>
-                {{ form_end(form) }}
-            {% else %}
-                <h2>Donne ton avis</h2>
-                <p class="muted"><a href="{{ path('app_login') }}">Connecte-toi</a> pour noter ce jeu</p>
-            {% endif %}
-        </section>
-
-        <section class="card">
-            <h2>Avis des joueurs ({{ jeu.avis|length }})</h2>
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card mb-3">
+                <div class="card-body">
+                    {% if monAvis %}
+                        <h5 class="card-title">Ton avis</h5>
+                        {% include '_etoiles.html.twig' with {note: monAvis.note} %}
+                        {% if monAvis.commentaire %}<p>{{ monAvis.commentaire }}</p>{% endif %}
+                        <a href="{{ path('app_avis_edit', {id: monAvis.id}) }}" class="btn btn-sm btn-outline-primary">Modifier</a>
+                        <form method="post" action="{{ path('app_avis_delete', {id: monAvis.id}) }}" onsubmit="return confirm('Supprimer ton avis ?');" class="d-inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ monAvis.id) }}">
+                            <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                        </form>
+                    {% elseif form %}
+                        <h5 class="card-title">Donner mon avis</h5>
+                        {{ form_start(form) }}
+                            {{ form_row(form.note) }}
+                            {{ form_row(form.commentaire) }}
+                            <button class="btn btn-primary">Publier</button>
+                        {{ form_end(form) }}
+                    {% else %}
+                        <h5 class="card-title">Donner mon avis</h5>
+                        <p>Il faut être <a href="{{ path('app_login') }}">connecté</a> pour noter un jeu.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <h4>Avis ({{ jeu.avis|length }})</h4>
             {% for avis in jeu.avis %}
-                <article class="avis-simple">
-                    <div class="avis-head">
-                        <a href="{{ path('app_profil', {pseudo: avis.auteur.pseudo}) }}"><strong>{{ avis.auteur.pseudo }}</strong></a>
-                        {% include '_etoiles.html.twig' with {note: avis.note} %}
-                        <span class="date muted">{{ avis.creeLe|date('d/m/Y') }}</span>
-                    </div>
-                    {% if avis.commentaire %}<p>{{ avis.commentaire }}</p>{% endif %}
-                </article>
+                <div class="border-bottom py-2">
+                    <a href="{{ path('app_profil', {pseudo: avis.auteur.pseudo}) }}"><strong>{{ avis.auteur.pseudo }}</strong></a>
+                    {% include '_etoiles.html.twig' with {note: avis.note} %}
+                    <small class="text-muted">{{ avis.creeLe|date('d/m/Y') }}</small>
+                    {% if avis.commentaire %}<div>{{ avis.commentaire }}</div>{% endif %}
+                </div>
             {% else %}
-                <p class="muted">Sois le premier à donner ton avis</p>
+                <p>Personne n'a encore donné son avis.</p>
             {% endfor %}
-        </section>
+        </div>
     </div>
 {% endblock %}

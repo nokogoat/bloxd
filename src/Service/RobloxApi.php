@@ -95,7 +95,42 @@ class RobloxApi
     }
 
     /**
-     * @return array<int, array{universeId: int, placeId: int, nom: string, joueurs: int, votes: int, icone: ?string}>
+     * Vignettes 16:9 des jeux (la première de chaque jeu).
+     *
+     * @param int[] $universeIds
+     * @return array<int, string> universeId => URL
+     */
+    public function vignettes(array $universeIds): array
+    {
+        if ($universeIds === []) {
+            return [];
+        }
+        try {
+            $data = $this->client->request('GET', 'https://thumbnails.roblox.com/v1/games/multiget/thumbnails', [
+                'query' => [
+                    'universeIds' => implode(',', $universeIds),
+                    'size' => '768x432',
+                    'format' => 'Png',
+                    'countPerUniverse' => 1,
+                ],
+            ])->toArray();
+        } catch (ExceptionInterface) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($data['data'] ?? [] as $jeu) {
+            $vignette = $jeu['thumbnails'][0] ?? null;
+            if ($vignette && ($vignette['state'] ?? '') === 'Completed' && !empty($vignette['imageUrl'])) {
+                $result[(int) $jeu['universeId']] = $vignette['imageUrl'];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array<int, array{universeId: int, placeId: int, nom: string, joueurs: int, votes: int, icone: ?string, vignette: ?string}>
      */
     public function rechercher(string $q, int $limite = 12): array
     {
@@ -120,6 +155,7 @@ class RobloxApi
                     'joueurs' => (int) ($c['playerCount'] ?? 0),
                     'votes' => (int) ($c['totalUpVotes'] ?? 0),
                     'icone' => null,
+                    'vignette' => null,
                 ];
                 if (count($resultats) >= $limite) {
                     break 2;
@@ -129,6 +165,9 @@ class RobloxApi
 
         foreach ($this->icones(array_keys($resultats)) as $universeId => $url) {
             $resultats[$universeId]['icone'] = $url;
+        }
+        foreach ($this->vignettes(array_keys($resultats)) as $universeId => $url) {
+            $resultats[$universeId]['vignette'] = $url;
         }
 
         return array_values($resultats);
@@ -157,7 +196,7 @@ class RobloxApi
             ->setDescription($infos['description'] ?: 'Pas de description.')
             ->setAnneeSortie((int) (new \DateTimeImmutable($infos['created']))->format('Y'));
 
-        $this->appliquerStats($jeu, $infos, $this->icones([$universeId])[$universeId] ?? null);
+        $this->appliquerStats($jeu, $infos, $this->icones([$universeId])[$universeId] ?? null, $this->vignettes([$universeId])[$universeId] ?? null);
 
         return $infos;
     }
@@ -205,11 +244,12 @@ class RobloxApi
         foreach (array_chunk(array_keys($parUniverse), 50) as $lot) {
             $infos = $this->infos($lot);
             $icones = $this->icones($lot);
+            $vignettes = $this->vignettes($lot);
             foreach ($lot as $universeId) {
                 if (!isset($infos[$universeId])) {
                     continue;
                 }
-                $this->appliquerStats($parUniverse[$universeId], $infos[$universeId], $icones[$universeId] ?? null);
+                $this->appliquerStats($parUniverse[$universeId], $infos[$universeId], $icones[$universeId] ?? null, $vignettes[$universeId] ?? null);
                 $nb++;
             }
         }
@@ -217,13 +257,16 @@ class RobloxApi
         return $nb;
     }
 
-    private function appliquerStats(Jeu $jeu, array $infos, ?string $icone): void
+    private function appliquerStats(Jeu $jeu, array $infos, ?string $icone, ?string $vignette): void
     {
         $jeu->setJoueursEnLigne($infos['playing'] ?? null)
             ->setVisites($infos['visits'] ?? null)
             ->setMajRoblox(new \DateTimeImmutable());
         if ($icone !== null) {
             $jeu->setImageUrl($icone);
+        }
+        if ($vignette !== null) {
+            $jeu->setVignetteUrl($vignette);
         }
     }
 

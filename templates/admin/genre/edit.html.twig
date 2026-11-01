@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier - Admin{% endblock %}
+{% block title %}Edit Genre{% endblock %}
 
 {% block body %}
-    <div class="card form-card">
-        <h1>Modifier</h1>
+    <h1>Edit Genre</h1>
 
-        {{ include('admin/genre/_form.html.twig', {'button_label': 'Enregistrer'}) }}
-
-        <a href="{{ path('admin_genre_index') }}">retour à la liste</a>
-
-        {{ include('admin/genre/_delete_form.html.twig') }}
+    <div class="col-md-6">
+        {{ include('admin/genre/_form.html.twig', {'button_label': 'Update'}) }}
     </div>
+
+    <a href="{{ path('admin_genre_index') }}">back to list</a>
+
+    {{ include('admin/genre/_delete_form.html.twig') }}
 {% endblock %}

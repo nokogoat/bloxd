@@ -1,26 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier mon avis - Bloxd{% endblock %}
+{% block title %}Modifier mon avis{% endblock %}
 
 {% block body %}
-    <div class="card form-card">
-        <h1>Modifier mon avis</h1>
-        <p class="muted">sur <a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}">{{ avis.jeu.titre }}</a></p>
+    <h1>Modifier mon avis sur {{ avis.jeu.titre }}</h1>
 
+    <div class="col-md-6">
         {{ form_start(form) }}
-            {{ form_label(form.note) }}
-            {{ form_errors(form.note) }}
-            <div class="choix-notes">
-                {% for choix in form.note %}
-                    <label class="choix-note" for="{{ choix.vars.id }}">
-                        {{ form_widget(choix) }}
-                        {% include '_etoiles.html.twig' with {note: choix.vars.value} %}
-                        <span>{{ choix.vars.label }}</span>
-                    </label>
-                {% endfor %}
-            </div>
+            {{ form_row(form.note) }}
             {{ form_row(form.commentaire) }}
-            <button class="btn" type="submit">Enregistrer</button>
+            <button class="btn btn-primary">Enregistrer</button>
+            <a href="{{ path('app_jeu_show', {id: avis.jeu.id}) }}" class="btn btn-link">Annuler</a>
         {{ form_end(form) }}
     </div>
 {% endblock %}

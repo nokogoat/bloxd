@@ -1,27 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Importer depuis Roblox - Admin{% endblock %}
+{% block title %}Importer depuis Roblox{% endblock %}
 
 {% block body %}
-    <div class="card form-card">
-        <h1>Importer depuis Roblox</h1>
-        <p class="muted">Colle l'URL d'un jeu (roblox.com/games/123456/Nom) ou juste son numéro. Le titre, le studio, la description, l'année, l'icône et les stats sont récupérés via l'API Roblox.</p>
+    <h1>Importer un jeu depuis Roblox</h1>
+    <p>Coller l'URL du jeu (ou juste son id). Le titre, le studio, la description, l'image et les stats sont récupérés via l'API Roblox.</p>
 
-        <form method="post">
-            <label for="roblox">URL ou ID du jeu</label>
-            <input type="text" id="roblox" name="roblox" placeholder="https://www.roblox.com/games/920587237/Adopt-Me" required autofocus>
-
-            <label for="genre">Genre</label>
-            <select id="genre" name="genre" required>
+    <form method="post" class="col-md-6">
+        <div class="mb-3">
+            <label for="roblox" class="form-label">URL ou id du jeu</label>
+            <input type="text" id="roblox" name="roblox" class="form-control" placeholder="https://www.roblox.com/games/920587237/Adopt-Me" required>
+        </div>
+        <div class="mb-3">
+            <label for="genre" class="form-label">Genre</label>
+            <select id="genre" name="genre" class="form-select">
                 {% for genre in genres %}
                     <option value="{{ genre.id }}">{{ genre.nom }}</option>
                 {% endfor %}
             </select>
-
-            <input type="hidden" name="_token" value="{{ csrf_token('importer') }}">
-            <button class="btn" type="submit">Importer</button>
-        </form>
-
-        <a href="{{ path('admin_jeu_index') }}">retour à la liste</a>
-    </div>
+        </div>
+        <input type="hidden" name="_token" value="{{ csrf_token('importer') }}">
+        <button class="btn btn-primary">Importer</button>
+        <a href="{{ path('admin_jeu_index') }}" class="btn btn-link">back to list</a>
+    </form>
 {% endblock %}

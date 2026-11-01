@@ -17,11 +17,11 @@ class AvisType extends AbstractType
             ->add('note', ChoiceType::class, [
                 'label' => 'Note',
                 'choices' => [
-                    'Incroyable' => 5,
-                    'Très bien' => 4,
-                    'Correct' => 3,
-                    'Bof' => 2,
-                    'Nul' => 1,
+                    '★★★★★' => 5,
+                    '★★★★' => 4,
+                    '★★★' => 3,
+                    '★★' => 2,
+                    '★' => 1,
                 ],
                 'expanded' => true,
             ])

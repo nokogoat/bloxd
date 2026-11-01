@@ -48,8 +48,13 @@ class Jeu
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
     private ?int $universeId = null;
 
+    // icône carrée
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageUrl = null;
+
+    // vignette 16:9
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $vignetteUrl = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $joueursEnLigne = null;
@@ -181,6 +186,18 @@ class Jeu
     public function setImageUrl(?string $imageUrl): static
     {
         $this->imageUrl = $imageUrl;
+
+        return $this;
+    }
+
+    public function getVignetteUrl(): ?string
+    {
+        return $this->vignetteUrl;
+    }
+
+    public function setVignetteUrl(?string $vignetteUrl): static
+    {
+        $this->vignetteUrl = $vignetteUrl;
 
         return $this;
     }

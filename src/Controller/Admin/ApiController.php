@@ -78,6 +78,7 @@ class ApiController extends AbstractController
         return $this->json([
             'id' => $jeu->getId(),
             'imageUrl' => $jeu->getImageUrl(),
+            'vignetteUrl' => $jeu->getVignetteUrl(),
             'joueursEnLigne' => $jeu->getJoueursEnLigne(),
             'visites' => $jeu->getVisites(),
             'majRoblox' => $jeu->getMajRoblox()?->format('d/m/Y H:i'),

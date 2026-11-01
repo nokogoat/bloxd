@@ -1,65 +1,68 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - Jeux{% endblock %}
+{% block title %}Jeux (admin){% endblock %}
 
 {% block body %}
-    <div class="page-head">
-        <h1>Jeux ({{ jeus|length }})</h1>
-        <div>
-            <a href="{{ path('admin_index') }}">Retour admin</a>
-            <button class="btn btn-secondary" id="btn-sync-tous">Synchroniser avec Roblox</button>
-            <a class="btn btn-secondary" href="{{ path('admin_jeu_importer') }}">Importer depuis Roblox</a>
-            <a class="btn" href="{{ path('admin_jeu_new') }}">Ajouter à la main</a>
-        </div>
-    </div>
+    <h1>Jeux</h1>
 
-    <section class="card">
-        <table>
-            <thead>
-                <tr>
-                    <th></th><th>Titre</th><th>Studio</th><th>Genre</th><th>Année</th><th>Avis</th><th>En ligne</th>
-                    <th>actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for jeu in jeus %}
-                <tr data-id="{{ jeu.id }}">
-                    <td>{% include '_jaquette.html.twig' with {jeu: jeu, taille: 'mini'} %}</td>
-                    <td>{{ jeu.titre }}</td><td>{{ jeu.studio }}</td><td>{{ jeu.genre.nom }}</td><td>{{ jeu.anneeSortie }}</td><td>{{ jeu.avis|length }}</td>
-                    <td class="en-ligne">{{ jeu.joueursEnLigne is not null ? jeu.joueursEnLigne|number_format(0, ',', ' ') : '-' }}</td>
-                    <td class="actions">
-                        {% if jeu.placeId %}<button class="btn-link" data-sync="{{ jeu.id }}">sync</button>{% endif %}
-                        <a href="{{ path('admin_jeu_edit', {'id': jeu.id}) }}">modifier</a>
-                        {{ include('admin/jeu/_delete_form.html.twig') }}
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="8">Aucun enregistrement</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </section>
+    <p>
+        <a href="{{ path('admin_jeu_new') }}" class="btn btn-primary">Create new</a>
+        <a href="{{ path('admin_jeu_importer') }}" class="btn btn-outline-primary">Importer depuis Roblox</a>
+        <button class="btn btn-outline-secondary" id="btn-sync">Synchroniser avec Roblox</button>
+        <a href="{{ path('admin_index') }}" class="btn btn-link">Retour</a>
+    </p>
+
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Titre</th>
+                <th>Studio</th>
+                <th>Genre</th>
+                <th>Année</th>
+                <th>Avis</th>
+                <th>En ligne</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for jeu in jeus %}
+            <tr data-id="{{ jeu.id }}">
+                <td>{% if jeu.vignetteUrl %}<img src="{{ jeu.vignetteUrl }}" class="mini-vignette" alt="">{% endif %}</td>
+                <td>{{ jeu.titre }}</td>
+                <td>{{ jeu.studio }}</td>
+                <td>{{ jeu.genre.nom }}</td>
+                <td>{{ jeu.anneeSortie }}</td>
+                <td>{{ jeu.avis|length }}</td>
+                <td class="en-ligne">{{ jeu.joueursEnLigne is not null ? jeu.joueursEnLigne|number_format(0, ',', ' ') : '-' }}</td>
+                <td>
+                    <a href="{{ path('admin_jeu_edit', {'id': jeu.id}) }}">edit</a>
+                    {% if jeu.placeId %}<button class="btn btn-link btn-sm p-0" data-sync="{{ jeu.id }}">sync</button>{% endif %}
+                    {{ include('admin/jeu/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
     <script>
+        // sync d'un seul jeu
         document.querySelectorAll('button[data-sync]').forEach(btn => btn.addEventListener('click', async () => {
-            btn.textContent = 'en cours';
-            const r = await fetch(`/admin/api/jeux/${btn.dataset.sync}/sync`, { method: 'POST' });
+            const r = await fetch('/admin/api/jeux/' + btn.dataset.sync + '/sync', { method: 'POST' });
             const d = await r.json();
-            if (!r.ok) { alert(d.error); btn.textContent = 'sync'; return; }
-            const tr = btn.closest('tr');
-            tr.querySelector('.en-ligne').textContent = d.joueursEnLigne.toLocaleString('fr-FR');
-            if (d.imageUrl) tr.querySelector('.jaquette').innerHTML = `<img src="${d.imageUrl}" alt="">`;
-            btn.textContent = 'sync';
+            if (!r.ok) { alert(d.error); return; }
+            btn.closest('tr').querySelector('.en-ligne').textContent = d.joueursEnLigne;
         }));
-
-        document.getElementById('btn-sync-tous').addEventListener('click', async (e) => {
+        // sync de tous les jeux
+        document.getElementById('btn-sync').addEventListener('click', async e => {
             e.target.disabled = true;
-            e.target.textContent = 'Synchronisation en cours';
             const r = await fetch('{{ path('admin_api_jeux_sync') }}', { method: 'POST' });
             const d = await r.json();
-            alert(`${d.misAJour} jeu(x) mis à jour sur ${d.total}.`);
+            alert(d.misAJour + ' jeu(x) mis à jour sur ' + d.total);
             location.reload();
         });
     </script>
