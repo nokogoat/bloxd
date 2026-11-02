@@ -59,36 +59,44 @@
         </aside>
     </header>
 
-    <div class="jeu-corps">
-        <section>
-            <div class="caps"><span>{{ monAvis ? 'Ton avis' : 'Noter ce jeu' }}</span></div>
-            {% if monAvis %}
-                <div class="panneau">
-                    {% include '_etoiles.html.twig' with {note: monAvis.note, taille: 'grande'} %}
-                    {% if monAvis.commentaire %}<p class="avis-texte">{{ monAvis.commentaire }}</p>{% endif %}
-                    <p style="margin: 14px 0 0; display: flex; gap: 8px">
-                        <a class="btn btn-petit" href="{{ path('app_avis_edit', {id: monAvis.id}) }}">Modifier</a>
-                        <form method="post" action="{{ path('app_avis_delete', {id: monAvis.id}) }}" onsubmit="return confirm('Supprimer ton avis ?');" class="inline">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ monAvis.id) }}">
-                            <button class="btn btn-petit btn-danger">Supprimer</button>
-                        </form>
-                    </p>
+    <section class="noter" id="noter">
+        {% if monAvis %}
+            <div class="noter-gauche">
+                <h2>Ta note</h2>
+                {% include '_etoiles.html.twig' with {note: monAvis.note, taille: 'geante'} %}
+                <p class="note-texte">{{ monAvis.note }} sur 5</p>
+            </div>
+            <div class="noter-droite">
+                {% if monAvis.commentaire %}<p class="avis-texte">{{ monAvis.commentaire }}</p>{% else %}<p class="muted">Pas de commentaire</p>{% endif %}
+                <p class="actions-avis">
+                    <a class="btn" href="{{ path('app_avis_edit', {id: monAvis.id}) }}">Modifier</a>
+                    <form method="post" action="{{ path('app_avis_delete', {id: monAvis.id}) }}" onsubmit="return confirm('Supprimer ton avis ?');" class="inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ monAvis.id) }}">
+                        <button class="btn btn-danger">Supprimer</button>
+                    </form>
+                </p>
+            </div>
+        {% elseif form %}
+            {{ form_start(form, {attr: {class: 'noter-form'}}) }}
+                <div class="noter-gauche">
+                    <h2>Note ce jeu</h2>
+                    {% include '_avis_note_form.html.twig' %}
                 </div>
-            {% elseif form %}
-                <div class="panneau">
-                    {{ form_start(form) }}
-                        {% include '_avis_note_form.html.twig' %}
-                        {{ form_row(form.commentaire) }}
-                        <button class="btn btn-primary" type="submit">Publier</button>
-                    {{ form_end(form) }}
+                <div class="noter-droite">
+                    {{ form_widget(form.commentaire, {attr: {placeholder: 'Un commentaire, si tu veux', rows: 3}}) }}
+                    {{ form_errors(form.commentaire) }}
+                    <button class="btn btn-primary btn-grand" type="submit">Publier</button>
                 </div>
-            {% else %}
-                <div class="panneau">
-                    <p style="margin:0"><a href="{{ path('app_login') }}">Connecte-toi</a> ou <a href="{{ path('app_register') }}">crée un compte</a> pour noter ce jeu.</p>
-                </div>
-            {% endif %}
-        </section>
+            {{ form_end(form) }}
+        {% else %}
+            <div class="noter-gauche">
+                <h2>Note ce jeu</h2>
+                <p class="texte2" style="margin:0"><a href="{{ path('app_login') }}">Connecte-toi</a> ou <a href="{{ path('app_register') }}">crée un compte</a> pour donner ta note.</p>
+            </div>
+        {% endif %}
+    </section>
 
+    <div class="jeu-corps">
         <section>
             <div class="caps"><span>Avis des joueurs</span><span class="mono">{{ jeu.avis|length }}</span></div>
             <div class="avis-liste">
