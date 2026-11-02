@@ -45,8 +45,7 @@ strong { font-weight: 600; }
     display: flex; align-items: center; gap: 32px;
     position: relative; z-index: 5;
 }
-.logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; color: var(--texte); }
-.logo .brique { width: 14px; height: 14px; background: var(--accent); border-radius: 3px; transform: rotate(12deg); }
+.logo { font-size: 22px; font-weight: 600; color: var(--texte); letter-spacing: -.01em; }
 .nav .liens { display: flex; align-items: center; gap: 24px; font-size: 15px; }
 .nav .liens a { color: var(--texte2); }
 .nav .liens a:hover { color: var(--texte); }
@@ -98,24 +97,22 @@ form.inline { display: inline; }
 .flash { background: var(--carte); border: 1px solid var(--trait); border-left: 3px solid var(--positif); border-radius: 8px; padding: 12px 16px; margin: 16px 0; color: var(--texte2); font-size: 15px; }
 .flash-error { border-left-color: var(--negatif); }
 
-/* ---- la note en briques ---- */
-.note { display: inline-flex; gap: 4px; align-items: center; vertical-align: middle; }
-.note i { width: 10px; height: 10px; border-radius: 2px; transform: rotate(12deg); background: var(--releve2); border: 1px solid var(--trait-fort); }
-.note i.plein { background: var(--accent); border-color: var(--accent); }
-.note.grande i { width: 16px; height: 16px; border-radius: 3px; }
-.note.grande { gap: 6px; }
+/* ---- les étoiles ---- */
+.note { display: inline-flex; gap: 1px; align-items: center; vertical-align: middle; font-size: 15px; line-height: 1; }
+.note i { font-style: normal; color: var(--releve2); }
+.note i.plein { color: var(--accent); }
+.note.grande { font-size: 24px; gap: 2px; }
 
-/* saisie : 5 briques cliquables, radios inversées pour que le survol colore à gauche */
-.saisie-note { display: inline-flex; flex-direction: row-reverse; gap: 6px; margin: 8px 0 4px; }
+/* saisie : 5 étoiles cliquables, radios inversées pour que le survol colore à gauche */
+.saisie-note { display: inline-flex; flex-direction: row-reverse; gap: 2px; margin: 8px 0 4px; }
 .saisie-note input { position: absolute; opacity: 0; width: 0; height: 0; }
 .saisie-note label {
-    width: 28px; height: 28px; margin: 0; border-radius: 5px; transform: rotate(12deg); cursor: pointer;
-    background: var(--releve2); border: 1px solid var(--trait-fort);
-    transition: background-color .1s var(--ease), border-color .1s var(--ease);
+    font-size: 36px; line-height: 1; margin: 0; cursor: pointer; color: var(--releve2);
+    transition: color .1s var(--ease);
 }
-.saisie-note label:hover, .saisie-note label:hover ~ label { background: rgba(245, 197, 24, .45); border-color: rgba(245, 197, 24, .6); }
-.saisie-note input:checked ~ label { background: var(--accent); border-color: var(--accent); }
-.saisie-note input:focus-visible + label { outline: 2px solid var(--texte); outline-offset: 2px; }
+.saisie-note label:hover, .saisie-note label:hover ~ label { color: rgba(245, 197, 24, .5); }
+.saisie-note input:checked ~ label { color: var(--accent); }
+.saisie-note input:focus-visible + label { outline: 2px solid var(--texte); outline-offset: 2px; border-radius: 4px; }
 
 /* ---- backdrop ---- */
 .backdrop { position: absolute; left: 0; right: 0; top: 0; height: 720px; z-index: 0; overflow: hidden; }

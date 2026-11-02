@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Bloxd{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><rect width=%22128%22 height=%22128%22 rx=%2224%22 fill=%22%23141415%22/><rect x=%2232%22 y=%2232%22 width=%2264%22 height=%2264%22 rx=%2210%22 fill=%22%23f5c518%22 transform=%22rotate(12 64 64)%22/></svg>">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text x=%2264%22 y=%22108%22 text-anchor=%22middle%22 font-size=%22116%22 fill=%22%23f5c518%22>★</text></svg>">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
         {% block stylesheets %}
@@ -18,7 +18,7 @@
         {% block backdrop %}{% endblock %}
 
         <nav class="nav">
-            <a class="logo" href="{{ path('app_home') }}"><span class="brique"></span>Bloxd</a>
+            <a class="logo" href="{{ path('app_home') }}">Bloxd</a>
             <div class="liens">
                 <a href="{{ path('app_jeu_index') }}">Jeux</a>
                 {% if app.user %}

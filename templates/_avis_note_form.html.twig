@@ -1,9 +1,9 @@
-{# cinq briques cliquables, les radios sont inversées en CSS pour que le survol colore celles de gauche #}
+{# cinq étoiles cliquables, les radios sont inversées en CSS pour que le survol colore celles de gauche #}
 <span class="label">{{ form_label(form.note) }}</span>
 <div class="saisie-note">
     {% for choix in form.note|reverse %}
         <input type="radio" id="{{ choix.vars.id }}" name="{{ choix.vars.full_name }}" value="{{ choix.vars.value }}" {{ choix.vars.checked ? 'checked' }} required>
-        <label for="{{ choix.vars.id }}" title="{{ choix.vars.value }}/5, {{ choix.vars.label|lower }}"></label>
+        <label for="{{ choix.vars.id }}" title="{{ choix.vars.value }}/5, {{ choix.vars.label|lower }}">★</label>
     {% endfor %}
 </div>
 {{ form_errors(form.note) }}

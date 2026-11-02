@@ -37,7 +37,7 @@
     </table>
 
     <script>
-        const etoiles = n => '<span class="note">' + Array.from({length: 5}, (_, i) => `<i class="${i < n ? 'plein' : ''}"></i>`).join('') + '</span>';
+        const etoiles = n => '<span class="note">' + Array.from({length: 5}, (_, i) => `<i class="${i < n ? 'plein' : ''}">★</i>`).join('') + '</span>';
 
         fetch('{{ path('admin_api_stats') }}').then(r => r.json()).then(d => {
             const max = Math.max(1, ...Object.values(d.repartitionNotes));
